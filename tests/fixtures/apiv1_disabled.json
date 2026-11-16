@@ -1,0 +1,6 @@
+{
+ "field": null,
+ "detail": "Die Geraete-API ist auf diesem Geraet ausgeschaltet (Standard). Sie wird pro Geraet ueber den Haus-Modulparameter apiv1.enabled freigeschaltet oder befristet ueber POST /api/v1/aktivierung/ (apiv1.enabled_until).",
+ "schema_version": 1,
+ "error": "api_disabled"
+}

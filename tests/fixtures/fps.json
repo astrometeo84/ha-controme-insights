@@ -1,0 +1,585 @@
+{
+ "64": {
+  "einheit_text": "",
+  "explanation_text": "M1 = UniConnect ISG_TEMPERATURE_DHW_ACTUAL_522 \r\n(ISG-Register 522, WW-Ist, über Modbus-Proxy 1503), \r\nFehlerwert 0. \r\n\r\nM2 = UniConnect ISG_TEMPERATURE_DHW_COMFORT_1510 \r\n(ISG-Register 1510, WW-Komfort-Soll, Holding Register, UInt16, ×0,1), Abfrage alle 120s, Fehlerwert 99.\r\n\r\nlast_a0 = letzter Ausgabewert dieser FPS. Ein ab M1 ≥ M2 − 1; ist der Baustein bereits an (last_a0 == 1), bleibt er an bis M1 < M2 − 2. \r\n\r\nDamit steckt 1 K Hysterese in der Formel, die FPS-Hysterese ist daher 0. \r\nBei einem Lesefehler von M2 (99) bleibt der Baustein aus. \r\n\r\nDen Sollwert nur an der WP bzw. im ISG ändern, Controme folgt automatisch. Fehlerwert der FPS 0.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Aktiv, wenn das Warmwasser mindestens auf normalem Niveau ist (WW-Ist höchstens 1 K unter dem Komfort-Sollwert der WP, derzeit ab 44 °C). Erst dann darf PV-Überschuss zusätzlich in den Estrich gehen (+2 K). Den Vorrang des Warmwassers regelt die WP selbst: Im Boost lädt sie zuerst das Warmwasser. Fällt es nach einer Zapfung mehr als 2 K unter den Komfort-Sollwert (derzeit unter 43 °C), geht der Baustein aus, bis nachgeladen ist.",
+  "name": "WP überheizen B WW bereit",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.260773+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {},
+   "modules": {
+    "m1": "ISG_TEMPERATURE_DHW_ACTUAL_522 - Modbus-Master - 521",
+    "m2": "ISG_TEMPERATURE_DHW_COMFORT_1510 - Modbus-Master - 1509"
+   }
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "output",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "(M1 >= M2 - 1) | ((last_a0 == 1) & (M1 >= M2 - 2))",
+  "last_value": 0,
+  "evaluated": {
+   "A0": 0,
+   "fpsid": 64,
+   "M1": 42.6,
+   "hysterese": 0.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "M2": 45.0,
+   "last_a0": 0
+  },
+  "user_variables": {}
+ },
+ "65": {
+  "einheit_text": "",
+  "explanation_text": "M1 = UniConnect HA_PV_PROGNOSE_3H_WH = PV-Prognose der nächsten 3 h in Wh aus HA neu\r\n(sensor.pv_prognose_3_h × 1000, berechnet aus SFML evcc_forecast, jede Minute neu),\r\nper JSON /local/pv_prognose_3h.json, Wertpfad pv_3h_wh\r\n(Wh statt kWh, weil UniConnect Nachkommastellen abschneidet),\r\nFehlerwert 0. M1 / 1000 = kWh.\r\n\r\nV1 = Schwellwert in kWh (Slider).\r\n\r\nA1 = FPS 63 „WP überheizen A evcc-Freigabe“ (1, solange evcc die WP freigibt).\r\n\r\nlast_a0 = letzter Ausgabewert dieser FPS.\r\n\r\nEin ab M1/1000 ≥ V1.\r\n\r\nIst C bereits an (last_a0 == 1), bleibt er an,\r\nsolange M1/1000 ≥ V1 − 1 ist (1 kWh Hysterese in der Formel, FPS-Hysterese daher 0)\r\noder solange evcc die WP freigibt (A1 == 1) und noch PV erwartet wird (M1 > 0).\r\n\r\nDie Prognose entscheidet damit über den Start der +2 K, evcc über das Ende.\r\nEndet die Freigabe bei einer Prognose unter V1 − 1, geht C aus und kommt erst ab V1 wieder.\r\nNachts (M1 = 0) geht C immer aus.\r\n\r\nFehlerwert 0 (keine Prognose → keine +2 K).",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Aktiv, wenn die PV-Prognose für die nächsten 3 Stunden mindestens den eingestellten Wert erreicht (Slider, Start 6 kWh ≈ WP 1,5 kW + Grundlast 0,5 kW über 3 h). Die Prognose entscheidet über den Start der +2 K: Gibt evcc die Wärmepumpe schon frei, bleibt der Baustein auch bei sinkender Prognose an, bis evcc die Freigabe beendet oder keine PV mehr erwartet wird. Nachts ist die Prognose 0; dann gibt es keine +2 K, auch nicht bei einem Boost in der Nacht.",
+  "name": "WP überheizen C PV-Prognose 3 h",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.303630+00:00",
+  "result_text": "",
+  "value": 1,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen A evcc-Freigabe"
+   },
+   "modules": {
+    "m1": "HA_PV_PROGNOSE_3H_WH - HTTP_GET - pv_3h_wh"
+   }
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "output",
+  "last_formatted": "1.00 um 11:27 13.11.2026",
+  "formula": "(M1 / 1000 >= V1) | ((last_a0 == 1) & ((M1 / 1000 >= V1 - 1) | ((A1 == 1) & (M1 > 0))))",
+  "last_value": 1,
+  "evaluated": {
+   "A1": 0,
+   "A0": 1,
+   "fpsid": 65,
+   "M1": 7400.0,
+   "V1": 6.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "hysterese": 0.0,
+   "last_a0": 1
+  },
+  "user_variables": {
+   "v1_slider_text": "Mindest-PV-Prognose für die nächsten 3 Stunden, ab der der Estrich zusätzlich +2 K bekommen darf. Standard 6 kWh (WP ≈ 1,5 kW + Grundlast ≈ 0,5 kW über 3 h). Höher = seltener und nur bei sicherem Überschuss, niedriger = öfter, aber mit mehr Risiko für Netzbezug. Aus geht der Baustein 1 kWh unter diesem Wert – außer evcc gibt die Wärmepumpe gerade frei: Dann bleibt er an, bis evcc die Freigabe beendet oder keine PV mehr erwartet wird.",
+   "v1": "6",
+   "v1_min_slider": "2",
+   "v1_input_type": "slider",
+   "v1_max_slider": "12"
+  }
+ },
+ "66": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_23_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_23_soll = Solltemperatur Gästeklo (Raum-ID 23) ohne Offsets – bewusst nicht raum_23_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Gästeklo bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Gästeklo",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.348902+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_23_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "raum_23_soll": 18.8,
+   "fpsid": 66,
+   "V1": 21.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "hysterese": 0.0
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "21",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "67": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_1_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_1_soll = Solltemperatur Büro (Raum-ID 1) ohne Offsets – bewusst nicht raum_1_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Büro bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Hobbyraum",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.399738+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_1_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 67,
+   "V1": 24.0,
+   "result_text": "",
+   "raum_1_soll": 21.0,
+   "override_mode": "auto",
+   "hysterese": 0.0
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "24",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "68": {
+  "einheit_text": "",
+  "explanation_text": "",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "",
+  "name": "WP überheizen Bad",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.452938+00:00",
+  "result_text": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Bad bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_14_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 68,
+   "raum_14_soll": 20.0,
+   "V1": 24.0,
+   "result_text": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Bad bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+   "override_mode": "auto",
+   "hysterese": 0.0
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "24",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "69": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_17_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_17_soll = Solltemperatur Kinderzimmer (Raum-ID 17) ohne Offsets – bewusst nicht raum_17_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Kinderzimmer bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Kinderzimmer",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.505325+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_17_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 69,
+   "raum_17_soll": 20.0,
+   "V1": 23.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "hysterese": 0.0
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "23",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "70": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_19_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_19_soll = Solltemperatur Wohnzimmer (Raum-ID 19) ohne Offsets – bewusst nicht raum_19_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Wohnzimmer bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Wohnzimmer",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.556969+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_19_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 70,
+   "V1": 23.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "raum_19_soll": 19.5,
+   "hysterese": 0.0
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "23",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "71": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_20_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_20_soll = Solltemperatur Flur (Raum-ID 20) ohne Offsets – bewusst nicht raum_20_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Flur bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Flur",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.609974+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_20_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 71,
+   "raum_20_soll": 18.0,
+   "result_text": "",
+   "V1": 23.0,
+   "hysterese": 0.0,
+   "override_mode": "auto"
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "23",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "72": {
+  "einheit_text": "",
+  "explanation_text": "A0 = max(0, V1 - raum_18_soll - 2) if (A1 > 0) else 0. A1 = Ergebnis von FPS 57 „WP überheizen“ (2 im Boost, sonst 0). V1 = Obergrenze im Boost. raum_18_soll = Solltemperatur Gästezimmer (Raum-ID 18) ohne Offsets – bewusst nicht raum_18_ziel, das den eigenen Offset enthielte. −2: die +2 K liefert FPS 57 selbst. max(0, …): nie negativ. Bei Ausfall (Fehlerwert 0) bleiben die +2 K aus FPS 57.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Im PV-Boost der Wärmepumpe (FPS 57 aktiv) hebt diese FPS die Zieltemperatur im Gästezimmer bis zur Obergrenze an (Slider „Obergrenze“). Zusammen mit den +2 K aus FPS 57 gilt im Boost: Ziel = Obergrenze, mindestens Solltemperatur + 2 K. Außerhalb des Boosts 0 K.",
+  "name": "WP überheizen Gästezimmer",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.661655+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen"
+   },
+   "modules": {}
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "max(0, V1 - raum_18_soll - 2) if (A1 > 0) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "fpsid": 72,
+   "V1": 21.0,
+   "raum_18_soll": 19.7,
+   "override_mode": "auto",
+   "hysterese": 0.0,
+   "result_text": ""
+  },
+  "user_variables": {
+   "v1_slider_text": "Höchste Zieltemperatur im PV-Boost (mindestens Soll + 2 K)",
+   "v1": "21",
+   "v1_min_slider": "18",
+   "v1_input_type": "slider",
+   "v1_max_slider": "26"
+  }
+ },
+ "57": {
+  "einheit_text": "",
+  "explanation_text": "A1 = FPS 63 „WP überheizen A evcc-Freigabe“ (evcc-Ladepunkt WP enabled). \r\n\r\nA2 = FPS 64 „WP überheizen B WW bereit“ (WW-Ist ≥ WW-Komfort-Soll − 1 K aus ISG-Register 1510, Hysterese 1 K). \r\n\r\nA3 = FPS 65 „WP überheizen C PV-Prognose 3 h“ (Start ab dem Slider-Wert; hält bis 1 kWh darunter oder solange evcc freigibt und noch PV erwartet wird). \r\n\r\nM1 = UniConnect ISG_OPERATING_STATUS_2501 (ISG-Register 2501 „Betriebsstatus“, in UniConnect Registeradresse 2500, Input Register, UInt16, Abfrage alle 300 s, Fehlerwert 255). Bit 7 = Sommerbetrieb aktiv. Die FPS kennt keine Bit-Operatoren, deshalb (M1 % 256) < 128 = Bit 7 nicht gesetzt = Heizsaison. Ergebnis 2 (K Offset), wenn A1, A2 und A3 aktiv sind und kein Sommerbetrieb ist, sonst 0. Bei einem Lesefehler (Fehlerwert 255) ist Bit 7 gesetzt → kein Offset. Die Klammern um den Vergleich sind nötig, weil & stärker bindet als <. Keine eigene Hysterese oder Verzögerung. Fehlerwert der FPS 0. Den Vorrang des Warmwassers regelt die WP selbst, der Überschuss kommt nur aus evcc (E3), die Prognose ist UND-Bedingung (E6–E8), der Sommerbetrieb kommt aus dem WPM (E24).",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Erhöht die Raumtemperatur um 2 K, damit überschüssiger PV-Strom als Wärme im Estrich gespeichert wird. Nur wenn alle vier Bedingungen erfüllt sind: evcc gibt die Wärmepumpe wegen PV-Überschuss frei, das Warmwasser ist mindestens auf normalem Niveau, die Prognose für die nächsten 3 Stunden reicht aus, und die Wärmepumpe ist nicht im Sommerbetrieb. Sonst kein Offset.",
+  "name": "WP überheizen",
+  "override_off_value": 0.0,
+  "last_evaluated_at": "2026-11-13T10:27:06.064125+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1.0,
+  "variables_details": {
+   "sensors": {},
+   "outs": {
+    "a1": "FPS WP überheizen A evcc-Freigabe",
+    "a3": "FPS WP überheizen C PV-Prognose 3 h",
+    "a2": "FPS WP überheizen B WW bereit"
+   },
+   "modules": {
+    "m1": "ISG_OPERATING_STATUS_2501 - Modbus-Master - 2500"
+   }
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "offset",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "2 if (A1 & A2 & A3 & ((M1 % 256) < 128)) else 0",
+  "last_value": 0,
+  "evaluated": {
+   "A1": 0,
+   "A0": 0,
+   "A3": 1.0,
+   "A2": 0,
+   "M1": 0.0,
+   "hysterese": 0.0,
+   "result_text": "",
+   "override_mode": "auto",
+   "fpsid": 57
+  },
+  "user_variables": {}
+ },
+ "63": {
+  "einheit_text": "",
+  "explanation_text": "M1 = UniConnect EVCC_WP_ENABLED \r\n(HTTP-GET auf die evcc-API /api/state, jq-Filter auf loadpoints[0].enabled = WP-Ladepunkt lp-1)\r\nBoolean 0/1, Abfrage alle 30 s. Ergebnis 1, \r\nwenn M1 == 1. \r\nKeine Hysterese/Verzögerung, da evcc selbst 5 min Ein- und 15 min Aus-Verzögerung hat. Fehlerwert 0. Nach evcc-Updates prüfen, ob die API-Struktur noch passt.",
+  "ui": {
+   "explanation_formula_txt_select": "show",
+   "show_formula_result_selection": "show",
+   "show_result_selection": "show",
+   "show_formula_selection": "show",
+   "explanation_user_txt_select": "show",
+   "hide_settings_icon": false,
+   "show_in_menu": true,
+   "show_details": true,
+   "fps_visible": true,
+   "show_sensors_result_selection": "show"
+  },
+  "explanation_user_txt": "Aktiv, wenn evcc die Wärmepumpe wegen PV-Überschuss gerade freigibt (Boost über SG Ready). evcc entscheidet allein über den Überschuss; Controme rechnet ihn nicht selbst. Ist evcc nicht erreichbar, bleibt der Baustein aus.",
+  "name": "WP überheizen A evcc-Freigabe",
+  "override_off_value": 0,
+  "last_evaluated_at": "2026-11-13T10:27:06.213834+00:00",
+  "result_text": "",
+  "value": 0,
+  "override_on_value": 1,
+  "variables_details": {
+   "sensors": {},
+   "outs": {},
+   "modules": {
+    "m1": "EVCC_WP_ENABLED - HTTP_GET - enabled"
+   }
+  },
+  "override_enabled": false,
+  "override_mode": "auto",
+  "override_until": null,
+  "mode": "output",
+  "last_formatted": "0.00 um 11:27 13.11.2026",
+  "formula": "M1 == 1",
+  "last_value": 0,
+  "evaluated": {
+   "fpsid": 63,
+   "result_text": "",
+   "A0": 0,
+   "override_mode": "auto",
+   "M1": 0.0,
+   "hysterese": 0.0
+  },
+  "user_variables": {}
+ }
+}

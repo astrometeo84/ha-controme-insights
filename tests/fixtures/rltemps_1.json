@@ -1,0 +1,18 @@
+[
+ {
+  "ausgang": null,
+  "name": "28_00_00_00_00_00_02_00",
+  "wert": 23.44,
+  "letzte_uebertragung": "10:49:44 13.11.2026",
+  "beschreibung": "büro",
+  "id": 1
+ },
+ {
+  "ausgang": null,
+  "name": "28_00_00_00_00_00_03_00",
+  "wert": 24.25,
+  "letzte_uebertragung": "10:49:44 13.11.2026",
+  "beschreibung": "büro_vorne",
+  "id": 2
+ }
+]

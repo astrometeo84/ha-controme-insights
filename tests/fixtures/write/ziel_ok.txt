@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+Server: nginx/1.18.0
+Date: Sun, 15 Nov 2026 13:19:23 GMT
+Content-Type: application/json
+Content-Length: 94
+Connection: keep-alive
+Vary: Cookie
+X-Frame-Options: SAMEORIGIN
+
+{"duration": 30, "full_expire_time": "2026-11-15 14:50", "temperature": 19.0, "time": "14:50"}

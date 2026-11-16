@@ -1,0 +1,219 @@
+{
+ "houses": {
+  "1": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:10.650+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:10.606+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "heizprogramm": [
+    [
+     "2026-11-13T18:30:00.684+01:00",
+     15,
+     "mode-change"
+    ],
+    [
+     "2026-11-13T22:30:00.684+01:00",
+     14,
+     "mode-change"
+    ],
+    [
+     "2026-11-14T05:27:10.684+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  }
+ },
+ "regelungs": {
+  "vorlauftemperaturregelung": {},
+  "differenzregelung": {}
+ },
+ "rooms": {
+  "1": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:10.768+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:10.709+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "14": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:10.957+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:10.775+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "15": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.213+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.156+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "16": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.019+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:10.961+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "17": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.083+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.023+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "18": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.148+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.088+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "19": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.276+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.217+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "20": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.340+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.280+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "23": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.401+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.343+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "24": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.465+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.407+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  },
+  "26": {
+   "jahreskalender": [
+    [
+     "2026-11-14T05:27:11.528+01:00",
+     null,
+     "ending-list"
+    ]
+   ],
+   "timer": [
+    [
+     "2026-11-14T05:27:11.469+01:00",
+     null,
+     "ending-list"
+    ]
+   ]
+  }
+ }
+}

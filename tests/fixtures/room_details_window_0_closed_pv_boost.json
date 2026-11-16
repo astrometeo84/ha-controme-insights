@@ -1,0 +1,1878 @@
+[
+ {
+  "floorName": "Dachgeschoss",
+  "floorId": "floor-01",
+  "rooms": [
+   {
+    "isTemporaryMode": false,
+    "setpoint": 21.0,
+    "heatingLoops": [],
+    "roomIcon": "desk",
+    "totalOffset": 3.35,
+    "temperatureState": "below_target",
+    "roomId": "room-001",
+    "id": 1,
+    "floorcoreMode": "Bad und Wellness",
+    "activeMode": {
+     "soll": 21.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 21.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 44.41,
+    "targetTemperature": 24.35,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 22.31,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 3.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0486,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": null,
+     "nextTemperature": 19.7,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 21.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 20.0,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 21.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 19.5,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 19.7,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 20.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Büro",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   }
+  ]
+ },
+ {
+  "floorName": "1. OG",
+  "floorId": "floor-05",
+  "rooms": [
+   {
+    "isTemporaryMode": false,
+    "setpoint": 20.0,
+    "heatingLoops": [],
+    "roomIcon": "dusche",
+    "totalOffset": 4.21,
+    "temperatureState": "below_target",
+    "roomId": "room-014",
+    "id": 14,
+    "floorcoreMode": "Bad und Wellness",
+    "activeMode": {
+     "soll": 20.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 20.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 58.3,
+    "targetTemperature": 24.21,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 20.64,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 4.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.08810000000000003,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": {
+      "zeit": "2026-11-13 18:30",
+      "text": "Smart Timing sorgt dafür, dass es dann warm ist",
+      "zustand": "rechtzeitig",
+      "temperatur": 20.3
+     },
+     "nextTemperature": 20.3,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 20.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 19.7,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 19.7,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 19.7,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 20.3,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 20.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Bad",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 18.0,
+    "heatingLoops": [],
+    "roomIcon": "bett",
+    "totalOffset": 0.31,
+    "temperatureState": "above_target",
+    "roomId": "room-016",
+    "id": 16,
+    "floorcoreMode": "Schlafraum",
+    "activeMode": {
+     "soll": 18.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 18.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 48.87,
+    "targetTemperature": 18.31,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 19.94,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.011300000000000025,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": {
+      "zeit": "2026-11-13 18:30",
+      "text": "Smart Timing sorgt dafür, dass es dann warm ist",
+      "zustand": "rechtzeitig",
+      "temperatur": 19.0
+     },
+     "nextTemperature": 19.0,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 18.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 18.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 18.0,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 18.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 19.0,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 18.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 18.0,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Schlafzimmer",
+    "dominantOffsetSource": "wetter",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 20.0,
+    "heatingLoops": [],
+    "roomIcon": "spiel",
+    "totalOffset": 3.28,
+    "temperatureState": "below_target",
+    "roomId": "room-017",
+    "id": 17,
+    "floorcoreMode": "Wohnraum",
+    "activeMode": {
+     "soll": 20.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 20.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 52.18,
+    "targetTemperature": 23.28,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 20.62,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 3.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.021799999999999996,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": null,
+     "nextTemperature": 19.5,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 20.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 18.0,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 18.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 19.5,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 20.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Kinderzimmer",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 19.7,
+    "heatingLoops": [],
+    "roomIcon": "sofa",
+    "totalOffset": 2.3,
+    "temperatureState": "below_target",
+    "roomId": "room-018",
+    "id": 18,
+    "floorcoreMode": "Wohnraum",
+    "activeMode": {
+     "soll": 19.7,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 19.7,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 49.76,
+    "targetTemperature": 22.0,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 21.69,
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 2.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0024000000000000197,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": null,
+     "nextTemperature": 19.0,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 19.7,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 19.7,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 19.7,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 19.0,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 19.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Gästezimmer",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   }
+  ]
+ },
+ {
+  "floorName": "EG",
+  "floorId": "floor-06",
+  "rooms": [
+   {
+    "isTemporaryMode": false,
+    "setpoint": 19.0,
+    "heatingLoops": [],
+    "roomIcon": "muetze",
+    "totalOffset": 0.3,
+    "temperatureState": "above_target",
+    "roomId": "room-015",
+    "id": 15,
+    "floorcoreMode": "Standard",
+    "activeMode": {
+     "soll": 19.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 19.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 50.16,
+    "targetTemperature": 19.3,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 19.81,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.004699999999999989,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": {
+      "zeit": "2026-11-13 18:30",
+      "text": "Smart Timing sorgt dafür, dass es dann warm ist",
+      "zustand": "rechtzeitig",
+      "temperatur": 19.5
+     },
+     "nextTemperature": 19.5,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 19.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 19.0,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 19.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 19.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 19.5,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 19.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Küche",
+    "dominantOffsetSource": "wetter",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 19.5,
+    "heatingLoops": [],
+    "roomIcon": "fernseher2",
+    "totalOffset": 3.82,
+    "temperatureState": "below_target",
+    "roomId": "room-019",
+    "id": 19,
+    "floorcoreMode": "Standard",
+    "activeMode": {
+     "soll": 19.5,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 19.5,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 48.16,
+    "targetTemperature": 23.32,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 19.94,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 3.5,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.018400000000000034,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": {
+      "zeit": "2026-11-13 18:30",
+      "text": "Smart Timing sorgt dafür, dass es dann warm ist",
+      "zustand": "rechtzeitig",
+      "temperatur": 20.5
+     },
+     "nextTemperature": 20.5,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 19.5,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 19.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 19.5,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 18.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 20.5,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 20.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 18.0,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": -5.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": "09:00",
+     "active": true,
+     "startLabel": "17:00",
+     "durationMinutes": 960,
+     "end": "2026-01-02T09:00",
+     "schema_version": 1,
+     "start": "2026-01-01T17:00",
+     "planned": false,
+     "elapsedShare": 1.0
+    },
+    "roomName": "Wohnzimmer",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 18.0,
+    "heatingLoops": [],
+    "roomIcon": "schuhe",
+    "totalOffset": 5.31,
+    "temperatureState": "below_target",
+    "roomId": "room-020",
+    "id": 20,
+    "floorcoreMode": "Nebenraum",
+    "activeMode": {
+     "soll": 18.0,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 18.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": 48.22,
+    "targetTemperature": 23.31,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 19.81,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 5.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.014600000000000009,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": null,
+     "nextTemperature": 18.0,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 18.0,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 18.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 18.0,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 18.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 18.0,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 18.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 18.0,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Flur",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 18.8,
+    "heatingLoops": [],
+    "roomIcon": "toilette",
+    "totalOffset": 2.5,
+    "temperatureState": "below_target",
+    "roomId": "room-023",
+    "id": 23,
+    "floorcoreMode": "Nebenraum",
+    "activeMode": {
+     "soll": 18.8,
+     "activated_mode_id": 3,
+     "use_offsets": true,
+     "activated_mode_text": "Anwesenheit 2",
+     "priority": 1,
+     "icon": "icon-clock",
+     "verbose_name": "temperaturszenen",
+     "mod": "temperaturszenen"
+    },
+    "permanentSetpoint": 18.8,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": null,
+    "targetTemperature": 21.3,
+    "unassignedReturnSensors": [],
+    "currentTemperature": 19.137254901960784,
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 2.2,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Kalender": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": {
+     "nextDueTime": "2026-11-13 18:30",
+     "modeEndDatetime": null,
+     "nextSceneName": "Abends",
+     "remainingTime": null,
+     "nextDueTimeRelative": 185.0,
+     "currentSceneName": "Anwesenheit 2",
+     "smartTiming": null,
+     "nextTemperature": 18.8,
+     "afterTimerSceneName": null,
+     "originalDuration": null,
+     "afterTimerTemperature": null
+    },
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": true,
+      "id": 3,
+      "temperature": 18.8,
+      "name": "Anwesenheit 2"
+     },
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 18.0,
+      "name": "default*"
+     },
+     {
+      "isActive": false,
+      "id": 11,
+      "temperature": 18.8,
+      "name": "Anwesenheit 3"
+     },
+     {
+      "isActive": false,
+      "id": 12,
+      "temperature": 18.0,
+      "name": "Anwesenheit 4"
+     },
+     {
+      "isActive": false,
+      "id": 13,
+      "temperature": 18.0,
+      "name": "Anwesenheit 5"
+     },
+     {
+      "isActive": false,
+      "id": 14,
+      "temperature": 18.0,
+      "name": "Nachts"
+     },
+     {
+      "isActive": false,
+      "id": 15,
+      "temperature": 18.8,
+      "name": "Abends"
+     },
+     {
+      "isActive": false,
+      "id": 16,
+      "temperature": 19.0,
+      "name": "Anwesenheit 1"
+     },
+     {
+      "isActive": false,
+      "id": 17,
+      "temperature": 18.0,
+      "name": "Abwesenheit "
+     },
+     {
+      "isActive": false,
+      "id": 18,
+      "temperature": 19.5,
+      "name": "Rückreise "
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Gästeklo",
+    "dominantOffsetSource": "fps",
+    "operatingMode": "Heating"
+   }
+  ]
+ },
+ {
+  "floorName": "Keller",
+  "floorId": "floor-08",
+  "rooms": [
+   {
+    "isTemporaryMode": false,
+    "setpoint": 18.0,
+    "heatingLoops": [],
+    "roomIcon": "punkte",
+    "totalOffset": 0.3,
+    "temperatureState": "at_target",
+    "roomId": "room-024",
+    "id": 24,
+    "floorcoreMode": null,
+    "activeMode": null,
+    "permanentSetpoint": 18.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": null,
+    "targetTemperature": 18.3,
+    "unassignedReturnSensors": [],
+    "currentTemperature": null,
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": null,
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 18.0,
+      "name": "default*"
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "Vorratsraum",
+    "dominantOffsetSource": "wetter",
+    "operatingMode": "Heating"
+   },
+   {
+    "isTemporaryMode": false,
+    "setpoint": 21.0,
+    "heatingLoops": [],
+    "roomIcon": "stufen",
+    "totalOffset": 0.3,
+    "temperatureState": "at_target",
+    "roomId": "room-026",
+    "id": 26,
+    "floorcoreMode": null,
+    "activeMode": null,
+    "permanentSetpoint": 21.0,
+    "gatewayOfflineMinutes": null,
+    "floorcoreZustand": null,
+    "currentHumidity": null,
+    "targetTemperature": 21.3,
+    "unassignedReturnSensors": [],
+    "currentTemperature": null,
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": 0.30000000000000004,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "modeEndDatetime": null,
+    "plannedChange": null,
+    "remainingTime": null,
+    "sceneControl": null,
+    "sensors": [],
+    "originalDuration": null,
+    "scenes": [
+     {
+      "isActive": false,
+      "id": 1,
+      "temperature": 18.0,
+      "name": "default*"
+     }
+    ],
+    "timer": {
+     "remainingSeconds": null,
+     "offset": 0.0,
+     "secondsToStart": null,
+     "running": false,
+     "currentOffset": 0.0,
+     "endLabel": null,
+     "active": false,
+     "startLabel": null,
+     "durationMinutes": null,
+     "end": null,
+     "schema_version": 1,
+     "start": null,
+     "planned": false,
+     "elapsedShare": 0.0
+    },
+    "roomName": "hk_verteiler",
+    "dominantOffsetSource": "wetter",
+    "operatingMode": "Heating"
+   }
+  ]
+ }
+]

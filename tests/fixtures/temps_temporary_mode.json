@@ -1,0 +1,1123 @@
+[
+ {
+  "hausname": "",
+  "etagenname": "Dachgeschoss",
+  "id": 1,
+  "raeume": [
+   {
+    "total_offset": 0.03560000000000002,
+    "next_temperature": 19.7,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.0,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.03560000000000002,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 20.0,
+    "temperatur": 22.06,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 1,
+    "mode_end_datetime": "",
+    "name": "Büro",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:17",
+      "name": "28_00_00_00_00_00_02_00",
+      "wert": 26.31,
+      "beschreibung": "büro"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:17",
+      "name": "28_00_00_00_00_00_03_00",
+      "wert": 27.75,
+      "beschreibung": "büro_vorne"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:18",
+      "name": "02:00:00:00:00:01",
+      "wert": 22.06,
+      "beschreibung": "raumcontroller_lf_buero"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 20.0,
+    "luftfeuchte": 45.93
+   }
+  ]
+ },
+ {
+  "hausname": "",
+  "etagenname": "1. OG",
+  "id": 5,
+  "raeume": [
+   {
+    "total_offset": -0.1678,
+    "next_temperature": 20.3,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.06780000000000001,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 20.0,
+    "temperatur": 20.64,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 14,
+    "mode_end_datetime": "",
+    "name": "Bad",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_04_00",
+      "wert": 25.94,
+      "beschreibung": "bad_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:18",
+      "name": "02:00:00:00:00:02",
+      "wert": 20.64,
+      "beschreibung": "raumcontroller_lf_bad_neu"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 20.0,
+    "luftfeuchte": 56.78
+   },
+   {
+    "total_offset": -0.014399999999999977,
+    "next_temperature": 19.0,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.0,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.014399999999999977,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 18.0,
+    "temperatur": 19.94,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 16,
+    "mode_end_datetime": "",
+    "name": "Schlafzimmer",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_05_00",
+      "wert": 25.75,
+      "beschreibung": "schlafzimmer_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_06_00",
+      "wert": 19.94,
+      "beschreibung": "schlafzimmer_rt"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:13",
+      "name": "26_00_00_00_00_00_07_00",
+      "wert": 51.44,
+      "beschreibung": "schlafzimmer_rf"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 18.0,
+    "luftfeuchte": 51.44
+   },
+   {
+    "total_offset": -0.05899999999999999,
+    "next_temperature": 19.5,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.0,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.05899999999999999,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 20.0,
+    "temperatur": 20.62,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 17,
+    "mode_end_datetime": "",
+    "name": "Kinderzimmer",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_08_00",
+      "wert": 26.19,
+      "beschreibung": "kinderzimmer_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_09_00",
+      "wert": 20.62,
+      "beschreibung": "kinderzimmer_rt"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "26_00_00_00_00_00_0a_00",
+      "wert": 55.9,
+      "beschreibung": "kinderzimmer_rf"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 20.0,
+    "luftfeuchte": 55.9
+   },
+   {
+    "total_offset": -0.1428,
+    "next_temperature": 19.0,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.04280000000000001,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 19.0,
+    "temperatur": 21.06,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 18,
+    "mode_end_datetime": "",
+    "name": "Gästezimmer",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_0b_00",
+      "wert": 26.0,
+      "beschreibung": "gaeste_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "02:00:00:00:00:03",
+      "wert": 21.06,
+      "beschreibung": "raumcontroller_lf_gaestezimmer"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 19.0,
+    "luftfeuchte": 54.28
+   }
+  ]
+ },
+ {
+  "hausname": "",
+  "etagenname": "EG",
+  "id": 6,
+  "raeume": [
+   {
+    "total_offset": -0.19310000000000005,
+    "next_temperature": 19.5,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.09310000000000003,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 19.0,
+    "temperatur": 20.44,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 15,
+    "mode_end_datetime": "",
+    "name": "Küche",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_01_00",
+      "wert": 21.5,
+      "beschreibung": "kueche_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_0c_00",
+      "wert": 20.44,
+      "beschreibung": "kueche_rt"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "26_00_00_00_00_00_0d_00",
+      "wert": 59.0,
+      "beschreibung": "kueche_rf"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 19.0,
+    "luftfeuchte": 59.0
+   },
+   {
+    "total_offset": -0.13369999999999999,
+    "next_temperature": 20.5,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.03369999999999997,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 20.0,
+    "temperatur": 20.25,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 19,
+    "mode_end_datetime": "",
+    "name": "Wohnzimmer",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_0e_00",
+      "wert": 21.81,
+      "beschreibung": "wohnzimmer_rl"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_0f_00",
+      "wert": 21.69,
+      "beschreibung": "wohnzimmer_rl_randzone"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_10_00",
+      "wert": 20.25,
+      "beschreibung": "wohnzimmer_rt"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "26_00_00_00_00_00_11_00",
+      "wert": 53.5,
+      "beschreibung": "wohnzimmer_rf"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 20.0,
+    "luftfeuchte": 53.5
+   },
+   {
+    "total_offset": -0.1636,
+    "next_temperature": 18.0,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": -0.06359999999999999,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": "",
+    "solltemperatur": 18.0,
+    "temperatur": 20.19,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 20,
+    "mode_end_datetime": "",
+    "name": "Flur",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_12_00",
+      "wert": 21.69,
+      "beschreibung": "flur_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_13_00",
+      "wert": 20.19,
+      "beschreibung": "flur_rt"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "26_00_00_00_00_00_14_00",
+      "wert": 55.71,
+      "beschreibung": "flur_rf"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 18.0,
+    "luftfeuchte": 55.71
+   },
+   {
+    "total_offset": 0.0,
+    "next_temperature": 18.8,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Geolocation": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Kalender": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": 251.0,
+    "next_temperaturszene_name": "Abends",
+    "remaining_time": 1804,
+    "solltemperatur": 19.0,
+    "temperatur": 19.294117647058822,
+    "current_temperaturszene_name": "Anwesenheit 1",
+    "id": 23,
+    "mode_end_datetime": "2026-11-15 14:50",
+    "name": "Gästeklo",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_15_00",
+      "wert": 21.69,
+      "beschreibung": "gaesteklo_rl"
+     },
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": "15.11.2026 14:14",
+      "name": "05:00:00:01",
+      "wert": {
+       "Status": null,
+       "Helligkeit": null,
+       "Bewegung": null,
+       "Temperatur": 19.294117647058822,
+       "Relative Luftfeuchte": null
+      },
+      "beschreibung": "gaesteklo_rt"
+     }
+    ],
+    "next_due_time": "2026-11-15 18:30",
+    "is_temporary_mode": true,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 19.0,
+    "luftfeuchte": "kein Sensor vorhanden"
+   }
+  ]
+ },
+ {
+  "hausname": "",
+  "etagenname": "Keller",
+  "id": 8,
+  "raeume": [
+   {
+    "total_offset": -0.1,
+    "next_temperature": null,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.1,
+      "haus": 0.0
+     },
+     "Fenster-offen-Erkennung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FPS": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "luftfeuchte": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": null,
+    "next_temperaturszene_name": null,
+    "remaining_time": "",
+    "solltemperatur": 18.0,
+    "temperatur": null,
+    "current_temperaturszene_name": null,
+    "id": 24,
+    "mode_end_datetime": "",
+    "name": "Vorratsraum",
+    "sensoren": [
+     {
+      "raumtemperatursensor": true,
+      "letzte_uebertragung": null,
+      "name": "05:00:00:02",
+      "wert": {
+       "Status": null,
+       "Helligkeit": null,
+       "Bewegung": null,
+       "Temperatur": null,
+       "Relative Luftfeuchte": null
+      },
+      "beschreibung": "keller_vorratsraum"
+     }
+    ],
+    "next_due_time": null,
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 18.0,
+    "luftfeuchte": "kein aktueller Wert vorhanden"
+   },
+   {
+    "total_offset": 0.0,
+    "next_temperature": null,
+    "allowed_modes": [
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "offsets": {
+     "Funksollregelung": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "api": {},
+     "Quickui": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Automatischer hydraulischer Abgleich Test": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Dynamischer hydraulischer Abgleich": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Timer": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Wetter": {
+      "raum": -0.0,
+      "haus": 0.0
+     },
+     "FloorCore": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Backupcontrol": {
+      "raum": 0.0,
+      "haus": 0.0
+     },
+     "Ki": {
+      "raum": 0.0,
+      "haus": 0.0
+     }
+    },
+    "next_due_time_rel": null,
+    "next_temperaturszene_name": null,
+    "remaining_time": "",
+    "solltemperatur": 21.0,
+    "temperatur": null,
+    "current_temperaturszene_name": null,
+    "id": 26,
+    "mode_end_datetime": "",
+    "name": "hk_verteiler",
+    "sensoren": [
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:16",
+      "name": "28_00_00_00_00_00_16_00",
+      "wert": 29.62,
+      "beschreibung": "og_hkv_vl"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:17",
+      "name": "28_00_00_00_00_00_17_00",
+      "wert": 39.19,
+      "beschreibung": "dg_hkv_vl"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:19",
+      "name": "28_00_00_00_00_00_18_00",
+      "wert": 20.62,
+      "beschreibung": "eg_hkv_vl"
+     },
+     {
+      "raumtemperatursensor": false,
+      "letzte_uebertragung": "15.11.2026 14:18",
+      "name": "12_00_00_00_00_00_00_0c",
+      "wert": 42.1,
+      "beschreibung": "ISG_TEMPERATURE_DHW_ACTUAL_522"
+     }
+    ],
+    "next_due_time": null,
+    "is_temporary_mode": false,
+    "betriebsart": "Heating",
+    "perm_solltemperatur": 21.0,
+    "luftfeuchte": "kein Sensor vorhanden"
+   }
+  ]
+ }
+]

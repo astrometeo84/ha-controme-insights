@@ -1,0 +1,23 @@
+[
+ {
+  "etagenname": "EG",
+  "id": 6,
+  "raeume": [
+   {
+    "ausgang": {
+     "1": 1,
+     " 2": 0
+    },
+    "id": 15,
+    "name": "Küche"
+   },
+   {
+    "ausgang": {
+     "3": 1
+    },
+    "id": 19,
+    "name": "Wohnzimmer"
+   }
+  ]
+ }
+]

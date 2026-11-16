@@ -1,0 +1,11 @@
+{
+ "repo": "controme-core",
+ "services-paket": true,
+ "sw-date": "2026-11-02 13:46:52",
+ "branch": "uiv2",
+ "app-compatibility": true,
+ "commit": "00744075",
+ "fbi": "Fri Apr 11 09:58:27 2025",
+ "os": "Debian GNU/Linux 11 (bullseye)",
+ "hw": "Raspberry Pi 4 Model B Rev 1.4 Revision: b03114"
+}

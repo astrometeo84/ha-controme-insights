@@ -1,0 +1,101 @@
+[
+ {
+  "etagenname": "Dachgeschoss",
+  "id": 1,
+  "raeume": [
+   {
+    "ausgang": {
+     "1": 29,
+     " 2": 0
+    },
+    "id": 1,
+    "name": "Büro"
+   }
+  ]
+ },
+ {
+  "etagenname": "1. OG",
+  "id": 5,
+  "raeume": [
+   {
+    "ausgang": {
+     "4": 0
+    },
+    "id": 14,
+    "name": "Bad"
+   },
+   {
+    "ausgang": {
+     "1": 0
+    },
+    "id": 16,
+    "name": "Schlafzimmer"
+   },
+   {
+    "ausgang": {
+     "3": 0
+    },
+    "id": 17,
+    "name": "Kinderzimmer"
+   },
+   {
+    "ausgang": {
+     "2": 0
+    },
+    "id": 18,
+    "name": "Gästezimmer"
+   }
+  ]
+ },
+ {
+  "etagenname": "EG",
+  "id": 6,
+  "raeume": [
+   {
+    "ausgang": {
+     "1": 0
+    },
+    "id": 15,
+    "name": "Küche"
+   },
+   {
+    "ausgang": {
+     " 2": 0,
+     "3": 0
+    },
+    "id": 19,
+    "name": "Wohnzimmer"
+   },
+   {
+    "ausgang": {
+     "4": 0
+    },
+    "id": 20,
+    "name": "Flur"
+   },
+   {
+    "ausgang": {
+     "5": 0
+    },
+    "id": 23,
+    "name": "Gästeklo"
+   }
+  ]
+ },
+ {
+  "etagenname": "Keller",
+  "id": 8,
+  "raeume": [
+   {
+    "ausgang": {},
+    "id": 24,
+    "name": "Vorratsraum"
+   },
+   {
+    "ausgang": {},
+    "id": 26,
+    "name": "hk_verteiler"
+   }
+  ]
+ }
+]
