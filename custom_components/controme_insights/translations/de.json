@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit Controme verbinden",
+        "description": "Verbindung zum Controme Mini-Server im lokalen Netz. Die JSON-API nutzt unverschlüsseltes HTTP: Das Passwort wird im Klartext übertragen. Nur im lokalen Netz verwenden.",
+        "data": {
+          "host": "Host",
+          "username": "Benutzer",
+          "password": "Passwort"
+        },
+        "data_description": {
+          "host": "Adresse des Mini-Servers, z. B. 192.0.2.10 oder controme.local.",
+          "username": "Controme-Benutzer; nötig für die Raumdetails und zum Schreiben.",
+          "password": "Passwort dieses Controme-Benutzers."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Controme-Zugangsdaten abgelehnt",
+        "description": "Der Mini-Server unter {host} hat die Zugangsdaten abgelehnt. Bitte neu eingeben.",
+        "data": {
+          "username": "Benutzer",
+          "password": "Passwort"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Der Mini-Server ist nicht erreichbar. Adresse prüfen und ob er im selben Netz ist.",
+      "invalid_auth": "Benutzer oder Passwort ist falsch.",
+      "api_disabled": "Die API ist auf dieser Controme-Anlage ausgeschaltet. In Controme freischalten und erneut versuchen.",
+      "no_house": "Auf dieser Controme-Anlage wurde kein Haus mit Räumen gefunden.",
+      "unknown": "Unerwarteter Fehler. Details stehen im Log."
+    },
+    "abort": {
+      "already_configured": "Diese Controme-Anlage ist bereits eingerichtet.",
+      "reauth_successful": "Die Zugangsdaten wurden aktualisiert."
+    }
+  }
+}
