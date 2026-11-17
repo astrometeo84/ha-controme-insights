@@ -1,12 +1,12 @@
 {
   "domain": "controme_insights",
   "name": "Controme Insights",
-  "codeowners": ["@<github-user>"],
+  "codeowners": ["@astrometeo84"],
   "config_flow": true,
-  "documentation": "https://github.com/<github-user>/ha-controme-insights",
+  "documentation": "https://github.com/astrometeo84/ha-controme-insights",
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/<github-user>/ha-controme-insights/issues",
-  "requirements": ["aiocontrome==0.0.1"],
+  "issue_tracker": "https://github.com/astrometeo84/ha-controme-insights/issues",
+  "requirements": ["aiocontrome==0.1.0"],
   "version": "0.0.1"
 }
