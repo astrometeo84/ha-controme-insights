@@ -38,7 +38,7 @@ The dev container has no route to the home network by design.
 | `upcomingoffsets/` | no | `upcomingoffsets.json` | houses/rooms → module → `[[iso_time, id|null, kind], …]` |
 | `fps/` | no | `fps.json` | `{"<fps_id>": {...}}` |
 | `vtr/`, `wetter_pro/` | no | `vtr_empty.json`, `wetter_pro_empty.json` | `{}` when not configured |
-| `roomoffsets/` | no | `roomoffsets_empty.json`, `roomoffsets_api.json`, `roomoffsets_after_house.json` | `[]` when no API offsets set – also right after setting room/house offsets of 0 K (shape with non-zero offsets still unknown) |
+| `roomoffsets/` | no | `roomoffsets_empty.json`, `roomoffsets_api.json`, `roomoffsets_after_house.json` | **Does not list API offsets**: stayed `[]` after `offset=0` (= remove, recorded) and also while room and house offsets were active (live test 2026-11-17, not recorded → `synthetic_roomoffsets_active.json`, marked synthetic). Read API offsets from `room_details/` → `offsets["api"]` instead. What `roomoffsets/` lists otherwise is unknown |
 
 ## Write endpoints (official docs)
 
@@ -59,7 +59,7 @@ offsets) – plausibility limits belong to the caller.
 | `set_default_duration` | `quickui/` | `duration` (default for temporary API commands and Quick-UI) |
 | `set_operating_mode` | `rooms/{room}/` or `rooms/` (all rooms) | `action=betriebsart`, `value` ∈ `heating`, `cooling`, `off`, `on` |
 | `set_room_offset` | `roomoffset/{room}/` | `offset` (decimal), `offset_name` (string); value lives only **10 min** in a cache → refresh regularly |
-| `set_house_offset` | `houseoffset/` | **undocumented** – the docs end after the endpoint name; fields assumed like `roomoffset` (`offset`, `offset_name`). Live test: accepted with HTTP 200; the effect of a non-zero offset is **not yet verified** |
+| `set_house_offset` | `houseoffset/` | **undocumented** – the docs end after the endpoint name; fields assumed like `roomoffset` (`offset`, `offset_name`). Live test: accepted with HTTP 200 for `offset=0` (= remove); the effect of a non-zero offset is **not yet verified** |
 
 - Not live-tested yet: `set_scene`, `set_default_duration`, `set_operating_mode` (they change state
   visibly; only the maintainer may test them live).
@@ -103,12 +103,18 @@ offsets) – plausibility limits belong to the caller.
 ### room_details (Basic Auth)
 - `skip_loops=true` makes no difference here; `heatingLoops` is always `[]`.
 - `sensors` and `unassignedReturnSensors` are empty – return sensors come only from `temps`.
-- `offsets`: dict of source → `{"raum": float, "haus": float}`; the set of sources **varies per room**;
-  `offsets["api"]` is `{}` when unused; after `set-houseoffset`/`set-roomoffset` (live test, 0 K) it was
-  seen as `{"haus": 0.0}` or `{"raum": 0.0, "haus": 0.0}` – a missing side counts as 0 (not recorded
-  as fixture; covered by a synthetic parser test).
+- `offsets`: dict of source → `{"raum": float, "haus": float}`; the set of sources **varies per room**
+  (e.g. `Kalender` only in some rooms, `Geolocation` missing in others) – accept any key.
+- `offsets["api"]` is the **only place API offsets show up** (`roomoffsets/` stays `[]`). Shape:
+  `{}` before any API offset; `{"haus": x}` once a house offset was set; the key `"raum"` appears only
+  once a room offset was set and stays (with `0.0`) after a reset with 0. A missing side counts as 0.
+  Fixture `room_details_api_offset_active.json` (room 23: `{"raum": 1.0, "haus": 0.0}`, others
+  `{"haus": 0.0}`).
+- `totalOffset` is the sum of all sources **including the API offset**, and
+  `targetTemperature = setpoint + totalOffset` (room 23: Wetter −0.4 + api 1.0 = 0.6; 18.8 → 19.4).
 - `dominantOffsetSource` values seen: `wetter`, `fps`, `fenster_offen`, `luftfeuchte`, and `null`
-  (fixture `room_details_temporary_mode.json`; pass unknown values through).
+  (fixture `room_details_temporary_mode.json`; pass unknown values through). It **ignores the API
+  offset** (stays `wetter` although api +1 K is the largest source).
 - Window-open detection: `offsets["Fenster-offen-Erkennung"].raum == -10.0` while open
   (detected ≤ 10 min after opening, removed ≤ 10 min after closing; fixtures `room_details_window_*`).
 - `sceneControl` can be `null` (rooms without schedule). `sceneControl.ownSchedule == true` →
