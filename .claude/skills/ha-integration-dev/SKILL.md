@@ -50,13 +50,17 @@ hacs.json
 - Writes (API offset, boost, quickui) only when enabled in options; auto-renew the room offset every
   5 min while ≠ 0 (Controme drops it after 10 min); clear on unload.
 - No blocking I/O; reuse `async_get_clientsession(hass)`.
+- Flow schemas use `probatio` (HA replaced voluptuous with it; `probatio.Schema`, `probatio.Required`).
+  It ships with Home Assistant, so it is no extra requirement.
 - Repairs: `ir.async_create_issue(..., is_fixable=False, translation_key=..., translation_placeholders=...)`
   and delete the issue when the condition clears.
 - Diagnostics: redact host, username, password, sensor IDs, MACs.
 
 ## Tests
 - `pytest-homeassistant-custom-component` pinned to the HA version the user runs; Python version as
-  required by that HA version.
+  required by that HA version. User runs 2026.11.x; no matching release exists yet, so tests use
+  0.13.375 (= HA 2026.10.4, Python ≥ 3.14.2) and `hacs.json` requires 2026.10.0. Raise both when a
+  2026.11 release appears.
 - Snapshot tests (syrupy) for entity states are welcome.
 - Config flow: every step, errors (cannot_connect, invalid_auth, api_disabled), abort on duplicate host,
   options flow round trip.
