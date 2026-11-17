@@ -26,7 +26,8 @@ custom_components/controme_insights/
   diagnostics.py     async_get_config_entry_diagnostics with async_redact_data
   strings.json + translations/en.json + translations/de.json
 tests/
-  conftest.py        fixtures loaded from tests/fixtures/*.json, aioresponses / patched client
+  conftest.py        fixtures loaded from tests/fixtures/*.json, patched ContromeClient (no aioresponses:
+                     incompatible with aiohttp >= 3.14)
   test_config_flow.py test_sensor.py test_binary_sensor.py test_number.py test_services.py
   test_repairs.py test_diagnostics.py test_init.py
 hacs.json

@@ -1,7 +1,7 @@
 # Controme Insights – Entwurf v1
 
 Ergänzung zur offiziellen Controme-Integration für Home Assistant.
-Stand: 13.11.2026 · Grundlage: Daten der eigenen Anlage (NOVA 27, Mini-Server 4)
+Stand: 17.11.2026 · Grundlage: Daten der eigenen Anlage (NOVA 27, Mini-Server 4)
 
 ---
 
@@ -106,14 +106,14 @@ Beispiel Wohnzimmer (Raum 19, 2 Ausgänge, 2 Rücklauffühler).
 | Regelabweichung | Sensor, K | berechnet | an | Ist − wirksamer Soll (negativ = zu kalt) |
 | Nächster Wechsel | Sensor, Zeitstempel | `room_details` (`nextDueTime`) | an | Attribute: nächste Szene, nächste Temperatur. `nextDueTimeRelative` wird **nicht** genutzt (im Test unzuverlässig, blieb zwischen Abrufen gleich) |
 | Smart Timing | Sensor, Aufzählung | `room_details` | an | gesehen: „rechtzeitig“, „vorheizen“; sonst „inaktiv“; Attribute: Zielzeit, Zieltemperatur |
-| Offset-Hauptquelle | Sensor, Aufzählung | `room_details` (`dominantOffsetSource`) | an | gesehen: `wetter`, `fps`, `fenster_offen`; unbekannte Werte werden durchgereicht; Attribut: alle Offsets je Quelle |
+| Offset-Hauptquelle | Sensor, Aufzählung | `room_details` (`dominantOffsetSource`) | an | gesehen: `wetter`, `fps`, `fenster_offen`, `luftfeuchte` und `null` (→ „keine“); unbekannte Werte werden durchgereicht; der API-Offset zählt für Controme **nicht** als Hauptquelle; Attribut: alle Offsets je Quelle |
 | Offset Wetter / Luftfeuchte / Fenster offen / Timer / KI / … | Sensor, K | `room_details` | aus | einer je Quelle, die der Raum meldet |
-| Fenster-offen-Erkennung | Binärsensor (Fenster) | `room_details` | an | an, solange `offsets["Fenster-offen-Erkennung"].raum` ≠ 0 (getestet 13.11.2026, siehe 10.) |
+| Fenster-offen-Erkennung | Binärsensor (Fenster) | `room_details` | an | an, solange `offsets["Fenster-offen-Erkennung"].raum` < 0 (Absenkung; getestet 13.11.2026, siehe 10.; `aiocontrome`: `RoomDetails.window_open`) |
 | Dauerhafter Sollwert | Sensor, °C | `room_details` | aus | Diagnose |
 | Vom Heizprogramm abgekoppelt | Binärsensor (Diagnose) | `room_details` (`sceneControl.ownSchedule`) | an | an, wenn der Raum einen eigenen Zeitplan hat und nicht dem Heizprogramm folgt (Anlass: versehentliches Abkoppeln Wohnzimmer am 13.11.2026) |
 | Timer aktiv | Binärsensor | `room_details` | aus | Attribute: Start, Ende, Offset |
 | Gateway offline | Binärsensor (Problem) | `room_details` | an | nur wenn Controme `gatewayOfflineMinutes` meldet |
-| API-Offset | Zahl, −5…+5 K, Schritt 0,1 | `set-roomoffset` | aus | 0 = aus; Integration erneuert den Offset alle 5 min (Controme verwirft ihn nach 10 min) |
+| API-Offset | Zahl, −5…+5 K, Schritt 0,1 | `set-roomoffset` | aus | 0 = aus (Senden von 0 löscht den Offset); Integration erneuert den Offset alle 5 min (Controme verwirft ihn nach 10 min). Aktueller Wert lesbar nur aus `room_details` → `offsets["api"]` (`roomoffsets/` listet API-Offsets nicht, Live-Test 17.11.2026); er ist in `totalOffset` und damit im wirksamen Soll enthalten |
 
 Rund 9–11 aktive Entitäten pro Raum, abhängig von Ausgängen und Rücklauffühlern.
 
