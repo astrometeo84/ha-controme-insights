@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -12,18 +13,30 @@ from aiocontrome import (
     ContromeConnectionError,
     ContromeError,
     ContromeNotFoundError,
+    SensorConnection,
 )
+from aiocontrome.parsers import parse_outs, parse_temps
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.data_entry_flow import FlowResultType, InvalidData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.controme_insights.const import CONF_HOUSE_ID, DOMAIN
+from custom_components.controme_insights.config_flow import _sensor_label
+from custom_components.controme_insights.const import (
+    CONF_GATEWAYS,
+    CONF_HOUSE_ID,
+    CONF_ROOMS,
+    CONF_SYSTEM_SENSORS,
+    CONF_WRITE_OFFSET,
+    CONF_WRITE_QUICKUI,
+    DOMAIN,
+)
 
-from .conftest import ENTRY_DATA, HOST
+from .conftest import CONTROLLED_ROOMS, ENTRY_DATA, HOST, SYSTEM_SENSORS, TZ, load_fixture
 
 USER_INPUT = {CONF_HOST: f" {HOST} ", CONF_USERNAME: "user", CONF_PASSWORD: "secret"}
+WRITES_OFF = {CONF_WRITE_OFFSET: False, CONF_WRITE_QUICKUI: False}
 
 
 @pytest.fixture(autouse=True)
@@ -43,15 +56,206 @@ async def _start(hass: HomeAssistant) -> str:
     return str(result["flow_id"])
 
 
-async def test_user_flow_creates_entry(hass: HomeAssistant, mock_client: MagicMock) -> None:
-    mock_client.detect_house_id.return_value = 2
+def _default(result: Any, key: str) -> Any:
+    """Default value of field ``key`` in a form result; ``None`` if it has none."""
+    for marker in result["data_schema"].schema:
+        if marker == key:
+            return marker.default() if callable(marker.default) else None
+    raise KeyError(key)
+
+
+def _options(result: Any, key: str) -> list[Any]:
+    """Options of the select selector ``key`` in a form result."""
+    for marker, selector in result["data_schema"].schema.items():
+        if marker == key:
+            return list(selector.config["options"])
+    raise KeyError(key)
+
+
+def _gateway(floors: list[int], name: str, gateway_type: str) -> dict[str, Any]:
+    return {"floors": [str(f) for f in floors], "name": name, "type": gateway_type}
+
+
+async def _connect(hass: HomeAssistant) -> dict[str, Any]:
+    """Run the connection step; return the rooms form."""
     flow_id = await _start(hass)
     result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "rooms"
+    return dict(result)
+
+
+async def _to_gateways(hass: HomeAssistant) -> dict[str, Any]:
+    """Accept the defaults for rooms and system sensors; return the first gateway form."""
+    result = await _connect(hass)
+    flow_id = result["flow_id"]
+    rooms = _default(result, CONF_ROOMS)
+    result = await hass.config_entries.flow.async_configure(flow_id, {CONF_ROOMS: rooms})
+    sensors = _default(result, CONF_SYSTEM_SENSORS)
+    result = await hass.config_entries.flow.async_configure(flow_id, {CONF_SYSTEM_SENSORS: sensors})
+    assert result["step_id"] == "gateway"
+    return dict(result)
+
+
+async def test_full_flow_creates_entry(hass: HomeAssistant, mock_client: MagicMock) -> None:
+    mock_client.detect_house_id.return_value = 2
+    result = await _connect(hass)
+    flow_id = result["flow_id"]
+    mock_client.get_room_details.assert_awaited_once()  # verifies the credentials
+
+    # Rooms: all listed, rooms without control (hk_verteiler, 26) deselected.
+    assert [o["value"] for o in _options(result, CONF_ROOMS)][-1] == "26"
+    assert _options(result, CONF_ROOMS)[0]["label"] == "Dachgeschoss · Büro"
+    assert _default(result, CONF_ROOMS) == [str(r) for r in CONTROLLED_ROOMS]
+    result = await hass.config_entries.flow.async_configure(flow_id, {CONF_ROOMS: ["1", "19"]})
+
+    # System sensors: only sensors of rooms without control, all preselected.
+    assert result["step_id"] == "system_sensors"
+    assert [o["value"] for o in _options(result, CONF_SYSTEM_SENSORS)] == SYSTEM_SENSORS
+    labels = [o["label"] for o in _options(result, CONF_SYSTEM_SENSORS)]
+    assert labels[2] == "eg_hkv_vl · 23.5 °C · 1-Wire"
+    assert labels[3].endswith("· virtual / foreign system")
+    assert _default(result, CONF_SYSTEM_SENSORS) == SYSTEM_SENSORS
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, {CONF_SYSTEM_SENSORS: SYSTEM_SENSORS[:3]}
+    )
+
+    # Gateway 1: Dachgeschoss, only zeros so far → type not prefilled.
+    assert result["step_id"] == "gateway"
+    assert result["description_placeholders"]["number"] == "1"
+    floors = result["description_placeholders"]["floors"]
+    assert "- Dachgeschoss: only 0/1 so far, cannot be detected" in floors
+    assert "- 1. OG: valve positions seen (PRO 0-10 V)" in floors
+    assert "Keller" not in floors  # no outputs
+    assert _default(result, "floors") == ["1"]
+    assert _default(result, "name") == "Gateway Dachgeschoss"
+    assert _default(result, "type") is None
+    with pytest.raises(InvalidData):  # type must be chosen
+        await hass.config_entries.flow.async_configure(
+            flow_id, {"floors": ["1"], "name": "Gateway DG"}
+        )
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, _gateway([1], "Gateway DG", "position")
+    )
+
+    # Gateway 2: 1. OG reported 12 % → PRO prefilled.
+    assert result["description_placeholders"]["number"] == "2"
+    assert _default(result, "floors") == ["5"]
+    assert _default(result, "type") == "position"
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, _gateway([5], "Gateway OG", "position")
+    )
+
+    # Gateway 3: EG → afterwards all floors are assigned.
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, _gateway([6], "Gateway EG", "auto")
+    )
+    assert result["step_id"] == "writes"
+    assert _default(result, CONF_WRITE_OFFSET) is False
+    assert _default(result, CONF_WRITE_QUICKUI) is False
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, {CONF_WRITE_OFFSET: True, CONF_WRITE_QUICKUI: False}
+    )
+
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == f"Controme ({HOST})"
     assert result["data"] == {**ENTRY_DATA, CONF_HOUSE_ID: 2}  # host is stripped
+    assert result["options"] == {
+        CONF_ROOMS: [1, 19],
+        CONF_SYSTEM_SENSORS: SYSTEM_SENSORS[:3],
+        CONF_GATEWAYS: [
+            {"name": "Gateway DG", "floors": [1], "type": "position"},
+            {"name": "Gateway OG", "floors": [5], "type": "position"},
+            {"name": "Gateway EG", "floors": [6], "type": "auto"},
+        ],
+        CONF_WRITE_OFFSET: True,
+        CONF_WRITE_QUICKUI: False,
+    }
     assert result["result"].unique_id == "http://controme.test"
-    mock_client.get_room_details.assert_awaited_once()  # verifies the credentials
+
+
+async def test_floors_can_share_a_gateway(hass: HomeAssistant, mock_client: MagicMock) -> None:
+    result = await _to_gateways(hass)
+    flow_id = result["flow_id"]
+    # Order of the floors follows Controme, not the selection.
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, _gateway([5, 1], " Gateway oben ", "position")
+    )
+    assert result["description_placeholders"]["number"] == "2"
+    assert [o["value"] for o in _options(result, "floors")] == ["6"]
+    result = await hass.config_entries.flow.async_configure(
+        flow_id, _gateway([6], "Gateway EG", "relay")
+    )
+    result = await hass.config_entries.flow.async_configure(flow_id, WRITES_OFF)
+    assert result["options"][CONF_GATEWAYS] == [
+        {"name": "Gateway oben", "floors": [1, 5], "type": "position"},
+        {"name": "Gateway EG", "floors": [6], "type": "relay"},
+    ]
+
+
+@pytest.mark.parametrize(
+    ("user_input", "error"),
+    [
+        ({"floors": [], "name": "Gateway DG", "type": "auto"}, "no_floors"),
+        ({"floors": ["1"], "name": "   ", "type": "auto"}, "no_name"),
+    ],
+)
+async def test_gateway_errors_keep_the_input(
+    hass: HomeAssistant, mock_client: MagicMock, user_input: dict[str, Any], error: str
+) -> None:
+    result = await _to_gateways(hass)
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input)
+    assert result["step_id"] == "gateway"
+    assert result["errors"] == {"base": error}
+    assert result["description_placeholders"]["number"] == "1"
+    # The entered values are suggested again.
+    for marker in result["data_schema"].schema:
+        if marker == "name":
+            assert marker.description == {"suggested_value": user_input["name"]}
+
+
+async def test_relay_floor_detected_as_unknown(hass: HomeAssistant, mock_client: MagicMock) -> None:
+    # Relay gateways only report 0/1: the type cannot be detected, only EG has outputs.
+    mock_client.get_outputs.return_value = parse_outs(load_fixture("synthetic_outs_relay.json"))
+    result = await _to_gateways(hass)
+    assert result["description_placeholders"]["floors"] == (
+        "- EG: only 0/1 so far, cannot be detected"
+    )
+    assert _default(result, "type") is None
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], _gateway([6], "Gateway EG", "relay")
+    )
+    assert result["step_id"] == "writes"
+
+
+async def test_steps_skipped_without_system_sensors_and_outputs(
+    hass: HomeAssistant, mock_client: MagicMock
+) -> None:
+    temps = [floor for floor in load_fixture("temps.json") if floor["id"] != 8]  # no Keller
+    mock_client.get_house.return_value = parse_temps(temps, house_id=1, tz=TZ)
+    mock_client.get_outputs.return_value = ()
+    result = await _connect(hass)
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], {CONF_ROOMS: []})
+    assert result["step_id"] == "writes"
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], WRITES_OFF)
+    assert result["options"] == {
+        CONF_ROOMS: [],
+        CONF_SYSTEM_SENSORS: [],
+        CONF_GATEWAYS: [],
+        **WRITES_OFF,
+    }
+
+
+def test_sensor_label_without_value_and_unknown_connection() -> None:
+    rooms = {
+        room.id: room for room in parse_temps(load_fixture("temps.json"), house_id=1, tz=TZ).rooms
+    }
+    humidity = next(
+        s for s in rooms[16].sensors if s.connection is SensorConnection.ONEWIRE_HUMIDITY
+    )
+    assert _sensor_label(humidity, {}).split(" · ")[1].endswith(" %")
+    radio = rooms[24].sensors[0]  # Vorratsraum: radio sensor without current value
+    assert _sensor_label(radio, {}) == "keller_vorratsraum · - · radio_sensor"
 
 
 async def test_room_details_unavailable_does_not_block_setup(
@@ -59,9 +263,7 @@ async def test_room_details_unavailable_does_not_block_setup(
 ) -> None:
     # Older firmware without the undocumented endpoint: continue without it.
     mock_client.get_room_details.side_effect = ContromeNotFoundError("HTTP 404", status=404)
-    flow_id = await _start(hass)
-    result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
-    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await _connect(hass)
 
 
 @pytest.mark.parametrize(
@@ -72,6 +274,8 @@ async def test_room_details_unavailable_does_not_block_setup(
         ("detect_house_id", ContromeApiDisabledError("disabled"), "api_disabled"),
         ("detect_house_id", ContromeError("No house with rooms found"), "no_house"),
         ("detect_house_id", RuntimeError("boom"), "unknown"),
+        ("get_house", ContromeConnectionError("Timeout"), "cannot_connect"),
+        ("get_outputs", ContromeConnectionError("Timeout"), "cannot_connect"),
     ],
 )
 async def test_user_flow_errors_and_recovery(
@@ -85,7 +289,7 @@ async def test_user_flow_errors_and_recovery(
 
     getattr(mock_client, method).side_effect = None
     result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
-    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["step_id"] == "rooms"
 
 
 async def test_duplicate_host_aborts(

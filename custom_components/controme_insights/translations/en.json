@@ -15,6 +15,44 @@
           "password": "Password of this Controme user."
         }
       },
+      "rooms": {
+        "title": "Rooms",
+        "description": "Choose the rooms that get additional entities (valves, return flow, offsets, next change). Rooms without control are deselected. The room climate itself comes from the official Controme integration.",
+        "data": {
+          "rooms": "Rooms"
+        }
+      },
+      "system_sensors": {
+        "title": "System sensors",
+        "description": "Sensors that serve no room as room or return-flow sensor, e.g. flow temperatures or hot water. Only selected sensors become entities.",
+        "data": {
+          "system_sensors": "System sensors"
+        }
+      },
+      "gateway": {
+        "title": "Gateway {number}",
+        "description": "The Controme API does not name gateways, only outputs per floor. Choose the floors this gateway supplies (several floors may share one gateway) and its type.\n\nFloors without gateway so far:\n{floors}\n\nWhere to find the type in Controme: Configuration → House & devices → Gateways. If the section \"Maximum opening values for outputs (FBH-PRO only)\" is shown, it is a PRO gateway.",
+        "data": {
+          "floors": "Floors",
+          "name": "Name",
+          "type": "Gateway type"
+        },
+        "data_description": {
+          "type": "Which gateway supplies these floors? Automatic: valve positions count as soon as a value above 1 was reported; until then only \"Heating\" is available."
+        }
+      },
+      "writes": {
+        "title": "Write functions",
+        "description": "Functions that change settings on the Controme system. All of them are off by default.",
+        "data": {
+          "write_offset": "API offset and boost",
+          "write_quickui": "Quick operation"
+        },
+        "data_description": {
+          "write_offset": "Temporary offset per room; Home Assistant renews it every 5 minutes because Controme drops it after 10 minutes.",
+          "write_quickui": "Temporary target temperature per room."
+        }
+      },
       "reauth_confirm": {
         "title": "Controme credentials rejected",
         "description": "The Mini-Server at {host} rejected the credentials. Enter them again.",
@@ -29,11 +67,97 @@
       "invalid_auth": "Username or password is wrong.",
       "api_disabled": "The API is disabled on this Controme system. Enable it in Controme and try again.",
       "no_house": "No house with rooms was found on this Controme system.",
-      "unknown": "Unexpected error. See the log for details."
+      "unknown": "Unexpected error. See the log for details.",
+      "no_floors": "Choose at least one floor.",
+      "no_name": "Enter a name."
     },
     "abort": {
       "already_configured": "This Controme system is already configured.",
       "reauth_successful": "The credentials were updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Controme Insights",
+        "menu_options": {
+          "rooms": "Rooms",
+          "system_sensors": "System sensors",
+          "gateways": "Gateways",
+          "writes": "Write functions"
+        }
+      },
+      "rooms": {
+        "title": "Rooms",
+        "description": "Choose the rooms that get additional entities (valves, return flow, offsets, next change). The room climate itself comes from the official Controme integration.",
+        "data": {
+          "rooms": "Rooms"
+        }
+      },
+      "system_sensors": {
+        "title": "System sensors",
+        "description": "Sensors that serve no room as room or return-flow sensor, e.g. flow temperatures or hot water. Only selected sensors become entities.",
+        "data": {
+          "system_sensors": "System sensors"
+        }
+      },
+      "gateway": {
+        "title": "Gateway {number}",
+        "description": "The Controme API does not name gateways, only outputs per floor. Choose the floors this gateway supplies (several floors may share one gateway) and its type.\n\nFloors without gateway so far:\n{floors}\n\nWhere to find the type in Controme: Configuration → House & devices → Gateways. If the section \"Maximum opening values for outputs (FBH-PRO only)\" is shown, it is a PRO gateway.",
+        "data": {
+          "floors": "Floors",
+          "name": "Name",
+          "type": "Gateway type"
+        },
+        "data_description": {
+          "type": "Which gateway supplies these floors? Automatic: valve positions count as soon as a value above 1 was reported; until then only \"Heating\" is available."
+        }
+      },
+      "writes": {
+        "title": "Write functions",
+        "description": "Functions that change settings on the Controme system.",
+        "data": {
+          "write_offset": "API offset and boost",
+          "write_quickui": "Quick operation"
+        },
+        "data_description": {
+          "write_offset": "Temporary offset per room; Home Assistant renews it every 5 minutes because Controme drops it after 10 minutes.",
+          "write_quickui": "Temporary target temperature per room."
+        }
+      }
+    },
+    "error": {
+      "no_floors": "Choose at least one floor.",
+      "no_name": "Enter a name."
+    },
+    "abort": {
+      "not_loaded": "Controme Insights is not running. Fix the connection first, then change the options."
+    }
+  },
+  "selector": {
+    "gateway_type": {
+      "options": {
+        "position": "FBH-Gateway PRO 0-10 V (valve position 0-100 %)",
+        "relay": "FBH-Gateway Standard / Mini-Gateway (relay, on/off)",
+        "auto": "Detect automatically"
+      }
+    },
+    "detection": {
+      "options": {
+        "position": "valve positions seen (PRO 0-10 V)",
+        "relay": "relay",
+        "unknown": "only 0/1 so far, cannot be detected"
+      }
+    },
+    "connection": {
+      "options": {
+        "onewire_temperature": "1-Wire",
+        "onewire_humidity": "1-Wire humidity",
+        "radio_room_controller": "radio room controller",
+        "radio_sensor": "radio sensor",
+        "virtual": "virtual / foreign system",
+        "unknown": "unknown connection"
+      }
     }
   }
 }

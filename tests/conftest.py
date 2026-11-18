@@ -22,7 +22,15 @@ from aiocontrome.parsers import (
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.controme_insights.const import CONF_HOUSE_ID, DOMAIN
+from custom_components.controme_insights.const import (
+    CONF_GATEWAYS,
+    CONF_HOUSE_ID,
+    CONF_ROOMS,
+    CONF_SYSTEM_SENSORS,
+    CONF_WRITE_OFFSET,
+    CONF_WRITE_QUICKUI,
+    DOMAIN,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures"
 TZ = ZoneInfo("Europe/Berlin")
@@ -34,6 +42,26 @@ ENTRY_DATA = {
     CONF_USERNAME: "user",
     CONF_PASSWORD: "secret",
     CONF_HOUSE_ID: 1,
+}
+
+# Floors in the fixtures: 1 Dachgeschoss, 5 1. OG, 6 EG (with outputs), 8 Keller (none).
+CONTROLLED_ROOMS = [1, 14, 16, 17, 18, 15, 19, 20, 23, 24]
+SYSTEM_SENSORS = [
+    "28_00_00_00_00_00_16_00",
+    "28_00_00_00_00_00_17_00",
+    "28_00_00_00_00_00_18_00",
+    "12_00_00_00_00_00_00_0c",
+]
+ENTRY_OPTIONS = {
+    CONF_ROOMS: CONTROLLED_ROOMS,
+    CONF_SYSTEM_SENSORS: SYSTEM_SENSORS,
+    CONF_GATEWAYS: [
+        {"name": "Gateway DG", "floors": [1], "type": "position"},
+        {"name": "Gateway OG", "floors": [5], "type": "position"},
+        {"name": "Gateway EG", "floors": [6], "type": "position"},
+    ],
+    CONF_WRITE_OFFSET: False,
+    CONF_WRITE_QUICKUI: False,
 }
 
 
@@ -77,5 +105,9 @@ def mock_client() -> Generator[MagicMock]:
 @pytest.fixture
 def config_entry() -> MockConfigEntry:
     return MockConfigEntry(
-        domain=DOMAIN, title=f"Controme ({HOST})", data=ENTRY_DATA, unique_id=BASE_URL
+        domain=DOMAIN,
+        title=f"Controme ({HOST})",
+        data=ENTRY_DATA,
+        options=ENTRY_OPTIONS,
+        unique_id=BASE_URL,
     )

@@ -15,6 +15,44 @@
           "password": "Passwort dieses Controme-Benutzers."
         }
       },
+      "rooms": {
+        "title": "Räume",
+        "description": "Räume wählen, die zusätzliche Entitäten erhalten (Ventile, Rücklauf, Offsets, nächster Wechsel). Räume ohne Regelung sind abgewählt. Das Raumklima selbst liefert die offizielle Controme-Integration.",
+        "data": {
+          "rooms": "Räume"
+        }
+      },
+      "system_sensors": {
+        "title": "System-Fühler",
+        "description": "Fühler, die keinem Raum als Raum- oder Rücklauffühler dienen, z. B. Vorlauftemperaturen oder Warmwasser. Nur angehakte Fühler werden als Entitäten angelegt.",
+        "data": {
+          "system_sensors": "System-Fühler"
+        }
+      },
+      "gateway": {
+        "title": "Gateway {number}",
+        "description": "Die Controme-API nennt keine Gateways, nur Ausgänge je Etage. Etagen wählen, die dieses Gateway versorgt (mehrere Etagen können sich ein Gateway teilen), und den Typ festlegen.\n\nEtagen ohne Gateway bisher:\n{floors}\n\nWo der Typ in Controme steht: Konfiguration → Haus & Geräte → Gateways. Erscheint dort der Abschnitt „Maximale Öffnungswerte für Ausgänge (nur FBH-PRO)“, ist es ein PRO-Gateway.",
+        "data": {
+          "floors": "Etagen",
+          "name": "Name",
+          "type": "Gateway-Typ"
+        },
+        "data_description": {
+          "type": "Welches Gateway versorgt diese Etagen? Automatisch: Stellwerte gelten, sobald einmal ein Wert über 1 gemeldet wurde; bis dahin ist nur „Heizt“ verfügbar."
+        }
+      },
+      "writes": {
+        "title": "Schreibfunktionen",
+        "description": "Funktionen, die Einstellungen an der Controme-Anlage ändern. Alle sind standardmäßig aus.",
+        "data": {
+          "write_offset": "API-Offset und Boost",
+          "write_quickui": "Schnellbedienung"
+        },
+        "data_description": {
+          "write_offset": "Vorübergehender Offset je Raum; Home Assistant erneuert ihn alle 5 Minuten, weil Controme ihn nach 10 Minuten verwirft.",
+          "write_quickui": "Vorübergehende Zieltemperatur je Raum."
+        }
+      },
       "reauth_confirm": {
         "title": "Controme-Zugangsdaten abgelehnt",
         "description": "Der Mini-Server unter {host} hat die Zugangsdaten abgelehnt. Bitte neu eingeben.",
@@ -29,11 +67,97 @@
       "invalid_auth": "Benutzer oder Passwort ist falsch.",
       "api_disabled": "Die API ist auf dieser Controme-Anlage ausgeschaltet. In Controme freischalten und erneut versuchen.",
       "no_house": "Auf dieser Controme-Anlage wurde kein Haus mit Räumen gefunden.",
-      "unknown": "Unerwarteter Fehler. Details stehen im Log."
+      "unknown": "Unerwarteter Fehler. Details stehen im Log.",
+      "no_floors": "Mindestens eine Etage wählen.",
+      "no_name": "Einen Namen eingeben."
     },
     "abort": {
       "already_configured": "Diese Controme-Anlage ist bereits eingerichtet.",
       "reauth_successful": "Die Zugangsdaten wurden aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Controme Insights",
+        "menu_options": {
+          "rooms": "Räume",
+          "system_sensors": "System-Fühler",
+          "gateways": "Gateways",
+          "writes": "Schreibfunktionen"
+        }
+      },
+      "rooms": {
+        "title": "Räume",
+        "description": "Räume wählen, die zusätzliche Entitäten erhalten (Ventile, Rücklauf, Offsets, nächster Wechsel). Das Raumklima selbst liefert die offizielle Controme-Integration.",
+        "data": {
+          "rooms": "Räume"
+        }
+      },
+      "system_sensors": {
+        "title": "System-Fühler",
+        "description": "Fühler, die keinem Raum als Raum- oder Rücklauffühler dienen, z. B. Vorlauftemperaturen oder Warmwasser. Nur angehakte Fühler werden als Entitäten angelegt.",
+        "data": {
+          "system_sensors": "System-Fühler"
+        }
+      },
+      "gateway": {
+        "title": "Gateway {number}",
+        "description": "Die Controme-API nennt keine Gateways, nur Ausgänge je Etage. Etagen wählen, die dieses Gateway versorgt (mehrere Etagen können sich ein Gateway teilen), und den Typ festlegen.\n\nEtagen ohne Gateway bisher:\n{floors}\n\nWo der Typ in Controme steht: Konfiguration → Haus & Geräte → Gateways. Erscheint dort der Abschnitt „Maximale Öffnungswerte für Ausgänge (nur FBH-PRO)“, ist es ein PRO-Gateway.",
+        "data": {
+          "floors": "Etagen",
+          "name": "Name",
+          "type": "Gateway-Typ"
+        },
+        "data_description": {
+          "type": "Welches Gateway versorgt diese Etagen? Automatisch: Stellwerte gelten, sobald einmal ein Wert über 1 gemeldet wurde; bis dahin ist nur „Heizt“ verfügbar."
+        }
+      },
+      "writes": {
+        "title": "Schreibfunktionen",
+        "description": "Funktionen, die Einstellungen an der Controme-Anlage ändern.",
+        "data": {
+          "write_offset": "API-Offset und Boost",
+          "write_quickui": "Schnellbedienung"
+        },
+        "data_description": {
+          "write_offset": "Vorübergehender Offset je Raum; Home Assistant erneuert ihn alle 5 Minuten, weil Controme ihn nach 10 Minuten verwirft.",
+          "write_quickui": "Vorübergehende Zieltemperatur je Raum."
+        }
+      }
+    },
+    "error": {
+      "no_floors": "Mindestens eine Etage wählen.",
+      "no_name": "Einen Namen eingeben."
+    },
+    "abort": {
+      "not_loaded": "Controme Insights läuft nicht. Zuerst die Verbindung reparieren, dann die Optionen ändern."
+    }
+  },
+  "selector": {
+    "gateway_type": {
+      "options": {
+        "position": "FBH-Gateway PRO 0–10 V (Stellwert 0–100 %)",
+        "relay": "FBH-Gateway Standard / Mini-Gateway (Relais, an/aus)",
+        "auto": "Automatisch erkennen"
+      }
+    },
+    "detection": {
+      "options": {
+        "position": "Stellwerte gesehen (PRO 0–10 V)",
+        "relay": "Relais",
+        "unknown": "bisher nur 0/1 – nicht erkennbar"
+      }
+    },
+    "connection": {
+      "options": {
+        "onewire_temperature": "1-Wire",
+        "onewire_humidity": "1-Wire-Feuchte",
+        "radio_room_controller": "Funk-Raumcontroller",
+        "radio_sensor": "Funkfühler",
+        "virtual": "virtuell / Fremdsystem",
+        "unknown": "Anbindung unbekannt"
+      }
     }
   }
 }
