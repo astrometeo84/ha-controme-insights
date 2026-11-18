@@ -89,6 +89,30 @@ Integration. Controme Insights baut das nicht nach.
 
 Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
 
+### 4a. Umsetzung (Präzisierung)
+
+- **Raum ohne Regelung** = Raum ohne Raumtemperaturfühler (`Room.is_controlled` in `aiocontrome`;
+  eigene Anlage: nur `hk_verteiler`). **Rücklauffühler** = alle übrigen Fühler eines geregelten
+  Raums außer 1-Wire-Feuchte (`Room.return_sensors`, deckt sich mit `rltemps`).
+  **System-Fühler** = alle Fühler der Räume ohne Regelung (`House.system_sensors`).
+- **Gateways:** ein Formular je Gateway (Etagen, Name, Typ), das sich wiederholt, bis jede Etage mit
+  Ausgängen zugeordnet ist. Ist der Typ nicht erkennbar, ist er nicht vorbelegt und muss gewählt
+  werden. Kennung des Gateways (Gerät) = erste Etage der Liste.
+- **Schritte ohne Inhalt entfallen** (keine System-Fühler, keine Ausgänge).
+- **Konfigurieren:** Menü mit Räume, System-Fühler, Gateways, Schreibfunktionen; jeder Punkt wird
+  einzeln gespeichert, danach lädt die Integration neu. Nutzt die Daten der laufenden Integration
+  (keine zusätzlichen Abfragen); läuft sie nicht, Abbruch mit Hinweis.
+- **Gespeichert:** Verbindung in `entry.data`, Auswahl in `entry.options`:
+  ```text
+  {
+    "rooms": [1, 14, ...],                     # Raum-IDs
+    "system_sensors": ["<fühler_id>", ...],
+    "gateways": [{"name": "Gateway EG", "floors": [6], "type": "position" | "relay" | "auto"}],
+    "write_offset": False,                     # API-Offset/Boost
+    "write_quickui": False,                    # Schnellbedienung
+  }
+  ```
+
 ---
 
 ## 5. Entitäten pro Raum
