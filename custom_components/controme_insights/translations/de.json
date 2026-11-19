@@ -63,7 +63,7 @@
       },
       "reconfigure": {
         "title": "Verbindung ändern",
-        "description": "Adresse oder Zugangsdaten des Mini-Servers ändern. Das Passwort bitte neu eingeben. Es muss dieselbe Controme-Anlage sein; für eine andere Anlage einen neuen Eintrag anlegen.",
+        "description": "Neue Adresse des Mini-Servers eingeben, z. B. nach einem IP-Wechsel, oder neue Zugangsdaten. Das Passwort bitte neu eingeben. Die Adresse wird übernommen, wenn dort Haus {house_id} mit mindestens einem der ausgewählten Räume existiert.",
         "data": {
           "host": "Host",
           "username": "Benutzer",
@@ -89,7 +89,7 @@
       "already_configured": "Diese Controme-Anlage ist bereits eingerichtet.",
       "reauth_successful": "Die Zugangsdaten wurden aktualisiert.",
       "reconfigure_successful": "Die Verbindung wurde aktualisiert.",
-      "wrong_device": "Unter dieser Adresse antwortet eine andere Controme-Anlage als die dieses Eintrags."
+      "wrong_device": "Unter dieser Adresse gibt es keine passende Controme-Anlage: Haus oder ausgewählte Räume nicht gefunden. Für eine andere Anlage einen neuen Eintrag anlegen."
     }
   },
   "options": {

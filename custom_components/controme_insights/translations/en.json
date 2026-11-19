@@ -63,7 +63,7 @@
       },
       "reconfigure": {
         "title": "Change connection",
-        "description": "Change the address or the credentials of the Mini-Server. Enter the password again. It must be the same Controme system; to add another one, set up a new entry.",
+        "description": "Enter the new address of the Mini-Server, e.g. after an IP address change, or new credentials. Enter the password again. The address is accepted if it holds house {house_id} with at least one of the selected rooms.",
         "data": {
           "host": "Host",
           "username": "Username",
@@ -89,7 +89,7 @@
       "already_configured": "This Controme system is already configured.",
       "reauth_successful": "The credentials were updated.",
       "reconfigure_successful": "The connection was updated.",
-      "wrong_device": "This address belongs to a different Controme system than the one configured in this entry."
+      "wrong_device": "No matching Controme system at this address: house or selected rooms not found. To add another Controme system, set up a new entry."
     }
   },
   "options": {

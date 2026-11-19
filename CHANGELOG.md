@@ -9,9 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Reconfigure flow: change host and credentials of an entry. The password is always entered
-  again and checked against the device; a different Controme system aborts with
-  `wrong_device`.
+- Reconfigure flow: change the address (e.g. after an IP address change) and credentials of an
+  entry. The password is always entered again and checked against the device. As the API
+  reports no serial number, the new address must hold the stored house with at least one of
+  the selected rooms (otherwise `wrong_device`); an address of another entry aborts with
+  `already_configured`. The unique ID and the generated title follow the new address.
 - Diagnostics download: entry (host, username, password and title redacted), options, system
   info, status per coordinator (last success, last error without host or credentials) and the
   data of all coordinators. Sensor IDs, MACs and IP addresses are replaced by

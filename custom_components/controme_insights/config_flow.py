@@ -19,6 +19,7 @@ from aiocontrome import (
     ContromeClient,
     ContromeConnectionError,
     ContromeError,
+    ContromeNotFoundError,
     ContromeResponseError,
     House,
     Output,
@@ -118,6 +119,32 @@ async def _connect(client: ContromeClient) -> tuple[int, House, tuple[Output, ..
     """Validate a new connection: house ID, credentials, house and outputs."""
     house_id = await _validate(client)
     return house_id, await client.get_house(), await client.get_outputs()
+
+
+class _WrongDevice(Exception):
+    """The address answers, but not with the Controme system of the entry."""
+
+
+async def _check_same_system(client: ContromeClient, house_id: int, rooms: Iterable[int]) -> None:
+    """Plausibility check instead of a serial number (the API reports none).
+
+    The stored house ID must exist at the address and contain at least one of the selected
+    rooms (any room if none is selected). Credentials and API are verified as in the setup.
+    """
+    await _validate(client, house_id)
+    try:
+        house = await client.get_house()
+    except ContromeNotFoundError as err:
+        raise _WrongDevice from err
+    await client.get_outputs()
+    found = {room.id for room in house.rooms}
+    selected = set(rooms)
+    if not found or (selected and not found & selected):
+        raise _WrongDevice
+
+
+def _title(host: str) -> str:
+    return f"Controme ({host})"
 
 
 def _without_password(user_input: Mapping[str, Any] | None) -> dict[str, Any] | None:
@@ -426,7 +453,7 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self._options.update(user_input)
             return self.async_create_entry(
-                title=f"Controme ({self._data[CONF_HOST]})", data=self._data, options=self._options
+                title=_title(self._data[CONF_HOST]), data=self._data, options=self._options
             )
         return self.async_show_form(step_id="writes", data_schema=_writes_schema({}))
 
@@ -470,21 +497,41 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Change host and credentials; the password is always entered again."""
+        """Change host (e.g. a new IP address) and credentials; the password is entered again.
+
+        The API reports no serial number, so the new address is accepted if it holds the stored
+        house with at least one of the selected rooms. The unique ID follows the new address.
+        """
         entry = self._get_reconfigure_entry()
         errors: dict[str, str] = {}
         if user_input is not None:
             host = user_input[CONF_HOST].strip()
-            client = _client(self.hass, host, user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
-            await self.async_set_unique_id(client.base_url)
-            self._abort_if_unique_id_mismatch(reason="wrong_device")
+            house_id = entry.data[CONF_HOUSE_ID]
+            client = _client(
+                self.hass, host, user_input[CONF_USERNAME], user_input[CONF_PASSWORD], house_id
+            )
+            unique_id = client.base_url
+            if any(
+                other.unique_id == unique_id and other.entry_id != entry.entry_id
+                for other in self._async_current_entries(include_ignore=True)
+            ):
+                return self.async_abort(reason="already_configured")
             try:
-                house_id, _, _ = await _connect(client)
+                await _check_same_system(client, house_id, entry.options.get(CONF_ROOMS, []))
+            except _WrongDevice:
+                return self.async_abort(reason="wrong_device")
             except Exception as err:  # mapped to a form error
                 errors["base"] = _error_key(err)
             else:
+                # Keep a title the user has renamed; follow the host in the generated one.
+                title = (
+                    _title(host) if entry.title == _title(entry.data[CONF_HOST]) else entry.title
+                )
                 return self.async_update_reload_and_abort(
-                    entry, data_updates={**user_input, CONF_HOST: host, CONF_HOUSE_ID: house_id}
+                    entry,
+                    unique_id=unique_id,
+                    title=title,
+                    data_updates={**user_input, CONF_HOST: host},
                 )
         suggested = _without_password(user_input) or {
             CONF_HOST: entry.data[CONF_HOST],
@@ -494,6 +541,7 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=self.add_suggested_values_to_schema(STEP_USER_SCHEMA, suggested),
             errors=errors,
+            description_placeholders={"house_id": str(entry.data[CONF_HOUSE_ID])},
         )
 
 
