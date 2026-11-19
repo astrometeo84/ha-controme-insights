@@ -13,6 +13,8 @@ Keep this file identical in both repositories.
 - Home Assistant tokens, GitHub App private key and installation tokens.
 - Not secret, but private (treat the same way in the repo): host/IP, real room and person names,
   MACs, sensor IDs (see the pseudonymization section of skill `controme-api`).
+  The host may appear in local log messages, error messages and the config entry title (as in
+  HA Core), but never in diagnostics, repair texts, entity attributes or fixtures.
 
 ## Known limit – document it, do not hide it
 The Mini-Server speaks **plain HTTP only**. Credentials travel unencrypted in the local network,
@@ -37,12 +39,15 @@ this. README files must say so; never claim "secure transport".
    Home Assistant keeps `entry.data` in `.storage/core.config_entries` in plain text; there is no
    secret store in HA. That is accepted HA practice – do not invent own encryption.
 2. Password fields in flows use `TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))`
-   and are never pre-filled with the stored password (reauth/reconfigure ask again).
+   and are never pre-filled with the stored password (reauth/reconfigure ask again). After a
+   form error, do not return the password as a suggested value (only host and username).
 3. Auth failures raise `ConfigEntryAuthFailed` so HA starts the reauth flow. Keep a reauth flow
    and add a reconfigure flow; both validate against the device before saving.
 4. Diagnostics: `async_redact_data` with at least `host`, `username`, `password`, and run raw API
    payloads through `aiocontrome.redact()` (sensor IDs, MACs, IPs).
-5. Repairs and log messages: room/sensor names are fine, credentials and host are not.
+5. Credentials never appear in logs, error messages or repairs. The host may appear in
+   local log messages and the entry title; it is redacted in diagnostics and kept out of
+   repair texts.
 6. Tests must prove it: for setup, flows, diagnostics and a failing write, assert that the test
    password string does not appear in `caplog.text`, in diagnostics output or in error messages.
    Use an obviously fake password such as `"pw-test-SECRET"` so a search is unambiguous.
