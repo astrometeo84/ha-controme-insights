@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,6 +12,8 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.controme_insights.const import DOMAIN
+
+from .conftest import assert_no_credentials
 
 
 async def _setup(hass: HomeAssistant, entry: MockConfigEntry) -> None:
@@ -88,3 +91,43 @@ async def test_auth_error_on_room_details_starts_reauth(
     await _setup(hass, config_entry)
     assert config_entry.state is ConfigEntryState.LOADED
     assert len(_reauth_flows(hass)) == 1
+
+
+@pytest.mark.parametrize(
+    ("error", "state"),
+    [
+        (ContromeAuthError("HTTP 401", status=401), ConfigEntryState.SETUP_ERROR),
+        (
+            ContromeConnectionError("Timeout requesting http://controme.test/"),
+            ConfigEntryState.SETUP_RETRY,
+        ),
+    ],
+)
+async def test_setup_failure_does_not_leak_credentials(
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+    error: Exception,
+    state: ConfigEntryState,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    mock_client.get_info.side_effect = error
+    await _setup(hass, config_entry)
+    assert config_entry.state is state
+    assert config_entry.reason is not None
+    assert_no_credentials(config_entry.reason)
+    assert_no_credentials(caplog.text)
+
+
+async def test_coordinator_failure_does_not_leak_credentials(
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    mock_client.get_room_details.side_effect = ContromeAuthError("HTTP 403", status=403)
+    await _setup(hass, config_entry)
+    assert config_entry.runtime_data.room_details.last_update_success is False
+    assert_no_credentials(caplog.text)

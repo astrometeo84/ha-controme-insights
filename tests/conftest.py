@@ -37,12 +37,22 @@ TZ = ZoneInfo("Europe/Berlin")
 
 HOST = "controme.test"
 BASE_URL = f"http://{HOST}"
+# Obviously fake credentials, so a search for them in logs, errors and diagnostics is unambiguous.
+TEST_USER = "user-test"
+TEST_PASSWORD = "pw-test-SECRET"
 ENTRY_DATA = {
     CONF_HOST: HOST,
-    CONF_USERNAME: "user",
-    CONF_PASSWORD: "secret",
+    CONF_USERNAME: TEST_USER,
+    CONF_PASSWORD: TEST_PASSWORD,
     CONF_HOUSE_ID: 1,
 }
+
+
+def assert_no_credentials(text: str) -> None:
+    """Assert that ``text`` (log, error message, diagnostics) contains no credentials."""
+    assert TEST_PASSWORD not in text
+    assert TEST_USER not in text
+
 
 # Floors in the fixtures: 1 Dachgeschoss, 5 1. OG, 6 EG (with outputs), 8 Keller (none).
 CONTROLLED_ROOMS = [1, 14, 16, 17, 18, 15, 19, 20, 23, 24]

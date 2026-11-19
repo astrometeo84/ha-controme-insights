@@ -21,7 +21,10 @@ from aiocontrome import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    TimestampDataUpdateCoordinator,
+    UpdateFailed,
+)
 
 from .const import DOMAIN
 
@@ -47,8 +50,11 @@ class ContromeRuntimeData:
 type ContromeConfigEntry = ConfigEntry[ContromeRuntimeData]
 
 
-class ContromeCoordinator[T](DataUpdateCoordinator[T]):
-    """Polls one endpoint. Its entities become unavailable only if this endpoint fails."""
+class ContromeCoordinator[T](TimestampDataUpdateCoordinator[T]):
+    """Polls one endpoint. Its entities become unavailable only if this endpoint fails.
+
+    ``last_update_success_time`` is shown in the diagnostics.
+    """
 
     config_entry: ContromeConfigEntry
 

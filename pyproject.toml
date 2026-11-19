@@ -10,7 +10,7 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
   # Keep in sync with "requirements" in manifest.json.
-  "aiocontrome>=0.1.0",
+  "aiocontrome>=0.2.0",
   # Pins Home Assistant; 0.13.375 = HA 2026.10.4 (no release for 2026.11 yet).
   "pytest-homeassistant-custom-component==0.13.375",
   "ruff",
