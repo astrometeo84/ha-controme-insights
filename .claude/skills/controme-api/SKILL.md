@@ -37,7 +37,7 @@ The dev container has no route to the home network by design.
 | `room_details/` | **Basic Auth** | `room_details_*.json` | floors → `rooms` (camelCase, rich) – undocumented, used by the official HA integration |
 | `upcomingoffsets/` | no | `upcomingoffsets.json` | houses/rooms → module → `[[iso_time, id|null, kind], …]` |
 | `fps/` | no | `fps.json` | `{"<fps_id>": {...}}` |
-| `vtr/`, `wetter_pro/` | no | `vtr_empty.json`, `wetter_pro_empty.json` | `{}` when not configured |
+| `vtr/`, `wetter_pro/` | no | `vtr_empty.json`, `wetter_pro_empty.json` | `{}` when not configured; shape with data unknown → client passes the object through deep-frozen (`get_vtr`, `get_weather_pro`), no model |
 | `roomoffsets/` | no | `roomoffsets_empty.json`, `roomoffsets_api.json`, `roomoffsets_after_house.json` | **Does not list API offsets**: stayed `[]` after `offset=0` (= remove, recorded) and also while room and house offsets were active (live test 2026-11-17, not recorded → `synthetic_roomoffsets_active.json`, marked synthetic). Read API offsets from `room_details/` → `offsets["api"]` instead. What `roomoffsets/` lists otherwise is unknown |
 
 ## Write endpoints (official docs)
@@ -165,5 +165,5 @@ offsets) – plausibility limits belong to the caller.
 Room/person names, MACs and 1-Wire IDs are replaced consistently (e.g. `02:00:00:00:00:01`,
 `28_00_00_00_00_00_05_00`). Scene names with initials are replaced by scene ID: 16 → `Anwesenheit 1`,
 3 → `Anwesenheit 2`, 11 → `Anwesenheit 3`, 12 → `Anwesenheit 4`, 13 → `Anwesenheit 5`; no other value
-may start with `Anwesenheit `. Keep it that way – never add real identifiers to the repo, and check
+may start with `Anwesenheit `. `aiocontrome.redact()` applies the same idea at runtime (IDs/MACs → typed placeholders, IPs → `**REDACTED**`) for diagnostics. Keep it that way – never add real identifiers to the repo, and check
 new recordings (names, IDs, scene names) before copying them into `tests/fixtures/`.
