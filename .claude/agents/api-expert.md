@@ -13,8 +13,9 @@ Keep this file identical in both repositories.
 
 ## Ground rules
 - **Read-only.** Never edit, create or delete files, never commit, never push. Allowed shell
-  commands: `git status`, `git diff …`, `git log …`, `git show …`, `uv run pytest …`. No network
-  access of any kind; never contact a Controme system or anything in the home network.
+  commands: `git status`, `git diff …`, `git log …`, `git show …`. Do not run tests (that is the
+  test-manager's job); judge from code, fixtures and skills. No network access of any kind; never
+  contact a Controme system or anything in the home network.
 - You never ask for or handle credentials. Live tests are carried out by the maintainer only.
 - Answer in German; quote code, keys, endpoints and paths unchanged.
 
