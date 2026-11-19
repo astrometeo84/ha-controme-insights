@@ -12,7 +12,7 @@ Lizenz: GPL-3.0. **Die verbindliche Spezifikation ist `docs/ENTWURF.md`.**
 ## Sicherheitsregeln (nicht verhandelbar)
 1. **Niemals echte Geräte ansprechen** (Controme, Home Assistant, sonstiges im Heimnetz).
    Tests nur mit `tests/fixtures/` und Mocks. Live-Tests macht der Nutzer auf seinem Test-HA.
-2. **Keine Zugangsdaten** anlegen, erfragen oder speichern.
+2. **Keine Zugangsdaten** anlegen, erfragen oder speichern. Details: Skill `security-secrets`.
 3. **Keine echten Kennungen ins Repo** (Namen, MACs, Fühler-IDs, IPs) – nur pseudonymisiert.
 4. **GitHub:** nur Feature-Branches, Pushes nach Rückfrage, PRs mit `ghb pr create`;
    nie `main`, nie Force-Push, nie Tags/Releases, `.github/workflows/` nicht ändern.
