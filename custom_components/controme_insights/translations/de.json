@@ -60,6 +60,20 @@
           "username": "Benutzer",
           "password": "Passwort"
         }
+      },
+      "reconfigure": {
+        "title": "Verbindung ändern",
+        "description": "Adresse oder Zugangsdaten des Mini-Servers ändern. Das Passwort bitte neu eingeben. Es muss dieselbe Controme-Anlage sein; für eine andere Anlage einen neuen Eintrag anlegen.",
+        "data": {
+          "host": "Host",
+          "username": "Benutzer",
+          "password": "Passwort"
+        },
+        "data_description": {
+          "host": "Adresse des Mini-Servers, z. B. 192.0.2.10 oder controme.local.",
+          "username": "Controme-Benutzer; nötig für die Raumdetails und zum Schreiben.",
+          "password": "Passwort dieses Controme-Benutzers."
+        }
       }
     },
     "error": {
@@ -73,7 +87,9 @@
     },
     "abort": {
       "already_configured": "Diese Controme-Anlage ist bereits eingerichtet.",
-      "reauth_successful": "Die Zugangsdaten wurden aktualisiert."
+      "reauth_successful": "Die Zugangsdaten wurden aktualisiert.",
+      "reconfigure_successful": "Die Verbindung wurde aktualisiert.",
+      "wrong_device": "Unter dieser Adresse antwortet eine andere Controme-Anlage als die dieses Eintrags."
     }
   },
   "options": {

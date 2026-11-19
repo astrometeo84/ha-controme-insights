@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Generator
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -33,9 +34,20 @@ from custom_components.controme_insights.const import (
     DOMAIN,
 )
 
-from .conftest import CONTROLLED_ROOMS, ENTRY_DATA, HOST, SYSTEM_SENSORS, TZ, load_fixture
+from .conftest import (
+    CONTROLLED_ROOMS,
+    ENTRY_DATA,
+    HOST,
+    SYSTEM_SENSORS,
+    TEST_PASSWORD,
+    TEST_USER,
+    TZ,
+    assert_no_credentials,
+    load_fixture,
+)
 
-USER_INPUT = {CONF_HOST: f" {HOST} ", CONF_USERNAME: "user", CONF_PASSWORD: "secret"}
+USER_INPUT = {CONF_HOST: f" {HOST} ", CONF_USERNAME: TEST_USER, CONF_PASSWORD: TEST_PASSWORD}
+NEW_CREDENTIALS = {CONF_USERNAME: "user-test-2", CONF_PASSWORD: "pw-test-SECRET-2"}
 WRITES_OFF = {CONF_WRITE_OFFSET: False, CONF_WRITE_QUICKUI: False}
 
 
@@ -61,6 +73,14 @@ def _default(result: Any, key: str) -> Any:
     for marker in result["data_schema"].schema:
         if marker == key:
             return marker.default() if callable(marker.default) else None
+    raise KeyError(key)
+
+
+def _suggested(result: Any, key: str) -> Any:
+    """Suggested value of field ``key`` in a form result; ``None`` if it has none."""
+    for marker in result["data_schema"].schema:
+        if marker == key:
+            return (marker.description or {}).get("suggested_value")
     raise KeyError(key)
 
 
@@ -279,13 +299,25 @@ async def test_room_details_unavailable_does_not_block_setup(
     ],
 )
 async def test_user_flow_errors_and_recovery(
-    hass: HomeAssistant, mock_client: MagicMock, method: str, error: Exception, key: str
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+    method: str,
+    error: Exception,
+    key: str,
 ) -> None:
+    caplog.set_level(logging.DEBUG)
     getattr(mock_client, method).side_effect = error
     flow_id = await _start(hass)
     result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": key}
+    # Host and username are suggested again, the password never.
+    assert _suggested(result, CONF_HOST) == USER_INPUT[CONF_HOST]
+    assert _suggested(result, CONF_USERNAME) == TEST_USER
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert TEST_PASSWORD not in repr(result)
+    assert_no_credentials(caplog.text)
 
     getattr(mock_client, method).side_effect = None
     result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
@@ -304,17 +336,26 @@ async def test_duplicate_host_aborts(
 
 
 async def test_reauth_updates_credentials(
-    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
+    caplog.set_level(logging.DEBUG)
     config_entry.add_to_hass(hass)
     result = await config_entry.start_reauth_flow(hass)
     assert result["step_id"] == "reauth_confirm"
     assert result["description_placeholders"]["host"] == HOST
 
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert _default(result, CONF_PASSWORD) is None  # the stored password is never prefilled
+
     mock_client.get_room_details.side_effect = ContromeAuthError("HTTP 403", status=403)
-    new = {CONF_USERNAME: "user2", CONF_PASSWORD: "new"}
+    new = NEW_CREDENTIALS
     result = await hass.config_entries.flow.async_configure(result["flow_id"], new)
     assert result["errors"] == {"base": "invalid_auth"}
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert new[CONF_PASSWORD] not in repr(result)
 
     mock_client.get_room_details.side_effect = None
     result = await hass.config_entries.flow.async_configure(result["flow_id"], new)
@@ -322,3 +363,95 @@ async def test_reauth_updates_credentials(
     assert result["reason"] == "reauth_successful"
     assert config_entry.data == {**ENTRY_DATA, **new}
     mock_client.detect_house_id.assert_not_awaited()  # house ID of the entry is kept
+    assert_no_credentials(caplog.text)
+    assert new[CONF_PASSWORD] not in caplog.text
+
+
+# --- Reconfigure ----------------------------------------------------------------------------
+
+
+async def _start_reconfigure(hass: HomeAssistant, entry: MockConfigEntry) -> dict[str, Any]:
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+    # Host and username are suggested, the stored password never.
+    assert _suggested(result, CONF_HOST) == HOST
+    assert _suggested(result, CONF_USERNAME) == TEST_USER
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert TEST_PASSWORD not in repr(result)
+    return dict(result)
+
+
+async def test_reconfigure_updates_connection(
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    result = await _start_reconfigure(hass, config_entry)
+    mock_client.detect_house_id.return_value = 2
+    user_input = {CONF_HOST: f" {HOST} ", **NEW_CREDENTIALS}
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert config_entry.data == {
+        CONF_HOST: HOST,  # stripped
+        **NEW_CREDENTIALS,
+        CONF_HOUSE_ID: 2,
+    }
+    assert config_entry.options  # options are kept
+    mock_client.get_room_details.assert_awaited_once()  # credentials verified on the device
+    assert_no_credentials(caplog.text)
+    assert NEW_CREDENTIALS[CONF_PASSWORD] not in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("method", "error", "key"),
+    [
+        ("get_room_details", ContromeAuthError("HTTP 401", status=401), "invalid_auth"),
+        ("detect_house_id", ContromeConnectionError("Timeout"), "cannot_connect"),
+    ],
+)
+async def test_reconfigure_errors_and_recovery(
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+    method: str,
+    error: Exception,
+    key: str,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    result = await _start_reconfigure(hass, config_entry)
+    flow_id = result["flow_id"]
+    getattr(mock_client, method).side_effect = error
+    user_input = {CONF_HOST: HOST, **NEW_CREDENTIALS}
+    result = await hass.config_entries.flow.async_configure(flow_id, user_input)
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": key}
+    assert _suggested(result, CONF_USERNAME) == NEW_CREDENTIALS[CONF_USERNAME]
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert NEW_CREDENTIALS[CONF_PASSWORD] not in repr(result)
+    assert config_entry.data == ENTRY_DATA  # nothing saved
+
+    getattr(mock_client, method).side_effect = None
+    result = await hass.config_entries.flow.async_configure(flow_id, user_input)
+    assert result["reason"] == "reconfigure_successful"
+    assert_no_credentials(caplog.text)
+    assert NEW_CREDENTIALS[CONF_PASSWORD] not in caplog.text
+
+
+async def test_reconfigure_other_device_aborts(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
+) -> None:
+    result = await _start_reconfigure(hass, config_entry)
+    mock_client.base_url = "http://other.test"
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_HOST: "other.test", **NEW_CREDENTIALS}
+    )
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "wrong_device"
+    assert config_entry.data == ENTRY_DATA
+    mock_client.detect_house_id.assert_not_awaited()  # aborted before contacting the device

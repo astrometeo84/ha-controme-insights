@@ -114,6 +114,19 @@ async def _validate(client: ContromeClient, house_id: int | None = None) -> int:
     return house_id
 
 
+async def _connect(client: ContromeClient) -> tuple[int, House, tuple[Output, ...]]:
+    """Validate a new connection: house ID, credentials, house and outputs."""
+    house_id = await _validate(client)
+    return house_id, await client.get_house(), await client.get_outputs()
+
+
+def _without_password(user_input: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """Values to suggest again after a form error: never the password."""
+    if user_input is None:
+        return None
+    return {key: value for key, value in user_input.items() if key != CONF_PASSWORD}
+
+
 def _error_key(err: Exception) -> str:
     """Translation key of the form error for ``err``."""
     if isinstance(err, ContromeAuthError):
@@ -350,9 +363,7 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(client.base_url)
             self._abort_if_unique_id_configured()
             try:
-                house_id = await _validate(client)
-                house = await client.get_house()
-                outputs = await client.get_outputs()
+                house_id, house, outputs = await _connect(client)
             except Exception as err:  # mapped to a form error
                 errors["base"] = _error_key(err)
             else:
@@ -362,7 +373,9 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
                 return await self.async_step_rooms()
         return self.async_show_form(
             step_id="user",
-            data_schema=self.add_suggested_values_to_schema(STEP_USER_SCHEMA, user_input),
+            data_schema=self.add_suggested_values_to_schema(
+                STEP_USER_SCHEMA, _without_password(user_input)
+            ),
             errors=errors,
         )
 
@@ -452,6 +465,35 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=schema,
             errors=errors,
             description_placeholders={"host": entry.data[CONF_HOST]},
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Change host and credentials; the password is always entered again."""
+        entry = self._get_reconfigure_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            host = user_input[CONF_HOST].strip()
+            client = _client(self.hass, host, user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+            await self.async_set_unique_id(client.base_url)
+            self._abort_if_unique_id_mismatch(reason="wrong_device")
+            try:
+                house_id, _, _ = await _connect(client)
+            except Exception as err:  # mapped to a form error
+                errors["base"] = _error_key(err)
+            else:
+                return self.async_update_reload_and_abort(
+                    entry, data_updates={**user_input, CONF_HOST: host, CONF_HOUSE_ID: house_id}
+                )
+        suggested = _without_password(user_input) or {
+            CONF_HOST: entry.data[CONF_HOST],
+            CONF_USERNAME: entry.data[CONF_USERNAME],
+        }
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=self.add_suggested_values_to_schema(STEP_USER_SCHEMA, suggested),
+            errors=errors,
         )
 
 
