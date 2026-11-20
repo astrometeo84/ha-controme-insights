@@ -8,8 +8,9 @@ description: Rules and checklist for handling credentials and other secrets in a
 Keep this file identical in both repositories.
 
 ## What counts as a secret here
-- Controme username and password (Basic Auth for `room_details/`, form fields `user`/`password`
-  for every `set/json/v1/…` call).
+- Controme username and password (form fields `user`/`password` for every `set/json/v1/…` call).
+  `room_details/` does not need Basic Auth (accepted but not checked, live test 2026-11-20); the
+  client still sends it – to be changed in aiocontrome 0.3.0.
 - Home Assistant tokens, GitHub App private key and installation tokens.
 - Not secret, but private (treat the same way in the repo): host/IP, real room and person names,
   MACs, sensor IDs (see the pseudonymization section of skill `controme-api`).
@@ -18,8 +19,9 @@ Keep this file identical in both repositories.
 
 ## Known limit – document it, do not hide it
 The Mini-Server speaks **plain HTTP only**. Credentials travel unencrypted in the local network,
-Basic Auth on reads, form fields on writes. Neither the library nor the integration can change
-this. README files must say so; never claim "secure transport".
+form fields on writes (and, until aiocontrome 0.3.0, Basic Auth on `room_details/` reads).
+Neither the library nor the integration can change this. README files must say so; never claim
+"secure transport".
 
 ## Library (aiocontrome)
 1. Credentials live only in the `ContromeClient` instance (private attributes). Never in module
