@@ -17,21 +17,25 @@ The dev container has no route to the home network by design.
 ## Basics
 
 - Base URL: `http://<host>/` – HTTP only on the local Mini-Server (no TLS).
-- House ID `h`: usually `1` (auto-detect: first ID whose `rooms` is non-empty).
-  **Live test 2026-11-20 (one-house system):** `temps/` and `room_details/` with `h = 99` return the
-  same data as house 1. Open: whether the ID is ignored or falls back to the only house, and how
-  systems with several houses behave. Consequence: the house ID is **no** device or plausibility
-  check, and auto-detect always finds `1` here.
+- House ID `h`: usually `1` (auto-detect: first ID whose `temps/` contains rooms).
+  **Live test 2026-11-20 (one-house system, not recorded as fixture):** `temps/` and
+  `room_details/` with `h = 99` return the same data as house 1. Open: whether the ID is ignored
+  or falls back to the only house, and how systems with several houses behave. Consequence: the
+  house ID is **no** device or plausibility check, and auto-detect always finds `1` here.
 - Read endpoints under `get/json/v1/{h}/…` need **no auth – including `room_details`**.
-  ~~`room_details` needs Basic Auth~~ – **refuted by the live test 2026-11-20**: without
+  ~~`room_details` needs Basic Auth~~ – **refuted by the live test 2026-11-20** (not recorded as
+  fixture): without
   credentials, with a wrong and with the right password it answered 200 with the same data
   (compared with a local diff script; only measurements and timestamps differed). Basic Auth is
-  accepted but not checked. Credentials are checked **only by write calls** (see below).
+  accepted but not checked. No tested read endpoint checks the credentials (`room_details/` tested
+  with wrong, missing and correct password; other read endpoints only without credentials);
+  write calls do (see below).
 - Write endpoints under `set/json/v1/{h}/…` are POST with form fields incl. `user` and `password`
   (see "Write endpoints" below; parameters from the official docs, never guess).
 - Trailing slash matters on some endpoints – always request with trailing slash.
 - 404 for an **unknown route** returns a huge Django debug HTML page (~240 kB, lists all server
-  routes). A write call to an unknown room answers 404 with an **empty** body instead (see below).
+  routes). `roomoffset/` with an unknown room (only `99999` tested) answers 404 with an **empty**
+  body instead (see below).
   **Never log full error bodies**; log status + first 200 chars at most.
 
 ## Read endpoints
@@ -53,16 +57,18 @@ The dev container has no route to the home network by design.
 
 POST, form-encoded. Every request contains `user` and `password` (plain HTTP, no TLS on the
 Mini-Server → local network only). Wrong credentials → **403 with an empty `text/html` body**.
-Credentials are checked **only here, by write calls** – no read endpoint checks them (live test
-2026-11-20, see "Basics").
+Credentials are checked by write calls; no tested read endpoint checks them (`room_details/`
+tested with wrong, missing and correct password; other read endpoints only without credentials;
+live test 2026-11-20, see "Basics").
 
 **Checking credentials without effect (live test 2026-11-20, not recorded as fixture):**
 `roomoffset/99999/` (room does not exist) with `offset=0.00`:
 - right credentials → **404 with an empty `text/html` body** (no Django debug page),
 - wrong credentials → **403 with an empty body**.
 
-The server checks the credentials **before** the room, so such a call verifies the credentials
-without changing anything. Only tested with room `99999`.
+The server checks the credentials **before** the room, so such a call verifies the credentials,
+presumably without effect (no before/after comparison). It is still a POST to a write endpoint.
+Only tested with room `99999`.
 
 Success (live test 2026-11-15, fixtures `write/*.txt`): **HTTP 200 with an empty `text/html` body**
 for `soll`, `roomoffset`, `houseoffset`; `ziel` answers with JSON

@@ -29,7 +29,9 @@ Keep this file identical in both repositories.
    relies on: name the fixture/skill line that proves it. If none exists, it is an assumption –
    it must be marked as such in code/docs, covered by a synthetic fixture listed as synthetic,
    and get a live-test plan. Known open assumptions include: `roomoffsets/` shape with an active
-   offset ≠ 0, the effect of a non-zero `houseoffset`, the answer to an unknown house ID, the
+   offset ≠ 0, the effect of a non-zero `houseoffset`, the answer to an unknown house ID on
+   multi-house systems (a one-house system returned house 1's data for ID 99, live test
+   2026-11-20), the
    shape of `vtr/` and `wetter_pro/` with data, the untested write calls (`set_scene`,
    `set_default_duration`, `set_operating_mode`).
 2. **Official API only.** `get/json/v1/…` and `set/json/v1/…`. The internal `/api/v1/…` is
@@ -37,7 +39,8 @@ Keep this file identical in both repositories.
    in the library (they belong to the caller).
 3. **Quirks respected.** Output type per floor (relay 0/1 vs PRO 0–100), sensor ID formats and
    connection types, local timestamps converted with the given timezone, `remainingTime` not
-   trusted, API offset cache of 10 min, offset 0 = remove, `room_details` needs Basic Auth.
+   trusted, API offset cache of 10 min, offset 0 = remove, `room_details` needs no auth (Basic
+   Auth accepted, not checked; live test 2026-11-20) – credentials are checked by write calls.
 4. **No overlap with the official integration.** Nothing that the official Controme integration
    already covers (room climate, scenes, heating programme, operating mode). Its code is
    confidential: nothing from it may be copied or paraphrased; only its device identifier

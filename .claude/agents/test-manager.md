@@ -30,7 +30,8 @@ Then check, for the changed code:
 
 1. **Every quirk has a test.** Each quirk listed in skill `controme-api` that the change touches
    is asserted by a test using a recorded fixture (not only a synthetic one).
-2. **Error paths.** HTTP 401/403 (empty body), 404 with Django HTML debug page, `api_disabled`,
+2. **Error paths.** HTTP 403 with empty body on write calls (read endpoints do not check
+   credentials, live test 2026-11-20), 404 with Django HTML debug page, `api_disabled`,
    timeouts/connection errors, invalid JSON, empty `{}`/`[]`, missing keys, `null` values.
 3. **Assertions that bite.** Flag tests without meaningful asserts, asserts on mocks only,
    `assert result` instead of exact values, over-broad `pytest.raises(Exception)`, snapshot
