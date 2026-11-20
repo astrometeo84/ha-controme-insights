@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Generator
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from typing import Any, cast
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 from aiocontrome import (
@@ -14,15 +14,17 @@ from aiocontrome import (
     ContromeConnectionError,
     ContromeError,
     ContromeNotFoundError,
+    ContromeResponseError,
     SensorConnection,
 )
 from aiocontrome.parsers import parse_outs, parse_temps
-from homeassistant.config_entries import SOURCE_USER
+from homeassistant.config_entries import SOURCE_IGNORE, SOURCE_USER
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType, InvalidData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.controme_insights import config_flow
 from custom_components.controme_insights.config_flow import _sensor_label
 from custom_components.controme_insights.const import (
     CONF_GATEWAYS,
@@ -49,6 +51,27 @@ from .conftest import (
 
 USER_INPUT = {CONF_HOST: f" {HOST} ", CONF_USERNAME: TEST_USER, CONF_PASSWORD: TEST_PASSWORD}
 NEW_CREDENTIALS = {CONF_USERNAME: "user-test-2", CONF_PASSWORD: "pw-test-SECRET-2"}
+# room_details/ answers that cannot be evaluated: setup fails closed (nothing is saved).
+ROOM_DETAILS_INVALID = [
+    pytest.param(ContromeNotFoundError("HTTP 404", status=404), id="404"),
+    pytest.param(ContromeResponseError("Invalid JSON from …: <html>", status=200), id="html_200"),
+    pytest.param(ContromeResponseError("HTTP 500", status=500), id="500"),
+]
+
+
+def _assert_client_created(host: str, house_id: int | None, credentials: dict[str, str]) -> None:
+    """The flow built its client with exactly these values (the patched class records it)."""
+    client_class = cast(MagicMock, config_flow.ContromeClient)
+    client_class.assert_called_with(
+        ANY,
+        host,
+        timezone=ANY,
+        house_id=house_id,
+        username=credentials[CONF_USERNAME],
+        password=credentials[CONF_PASSWORD],
+    )
+
+
 WRITES_OFF = {CONF_WRITE_OFFSET: False, CONF_WRITE_QUICKUI: False}
 
 
@@ -279,12 +302,19 @@ def test_sensor_label_without_value_and_unknown_connection() -> None:
     assert _sensor_label(radio, {}) == "keller_vorratsraum · - · radio_sensor"
 
 
-async def test_room_details_unavailable_does_not_block_setup(
-    hass: HomeAssistant, mock_client: MagicMock
+@pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
+async def test_user_flow_fails_closed_on_unusable_room_details(
+    hass: HomeAssistant, mock_client: MagicMock, error: Exception
 ) -> None:
-    # Older firmware without the undocumented endpoint: continue without it.
-    mock_client.get_room_details.side_effect = ContromeNotFoundError("HTTP 404", status=404)
-    await _connect(hass)
+    # Also 404 (e.g. older firmware without the undocumented endpoint): the credentials cannot
+    # be verified, so nothing is created.
+    mock_client.get_room_details.side_effect = error
+    flow_id = await _start(hass)
+    result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "room_details_invalid"}
+    assert _suggested(result, CONF_PASSWORD) is None
+    assert hass.config_entries.async_entries(DOMAIN) == []
 
 
 @pytest.mark.parametrize(
@@ -364,8 +394,22 @@ async def test_reauth_updates_credentials(
     assert result["reason"] == "reauth_successful"
     assert config_entry.data == {**ENTRY_DATA, **new}
     mock_client.detect_house_id.assert_not_awaited()  # house ID of the entry is kept
+    _assert_client_created(HOST, 1, new)  # stored host and house, new credentials
     assert_no_credentials(caplog.text)
     assert new[CONF_PASSWORD] not in caplog.text
+
+
+@pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
+async def test_reauth_fails_closed_on_unusable_room_details(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry, error: Exception
+) -> None:
+    config_entry.add_to_hass(hass)
+    result = await config_entry.start_reauth_flow(hass)
+    mock_client.get_room_details.side_effect = error
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], NEW_CREDENTIALS)
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "room_details_invalid"}
+    assert config_entry.data == ENTRY_DATA  # nothing saved
 
 
 # --- Reconfigure ----------------------------------------------------------------------------
@@ -420,9 +464,10 @@ async def test_reconfigure_new_ip_address(
     assert config_entry.unique_id == f"http://{NEW_HOST}"
     assert config_entry.title == f"Controme ({NEW_HOST})"  # generated title follows the host
     assert config_entry.data == {CONF_HOST: NEW_HOST, **NEW_CREDENTIALS, CONF_HOUSE_ID: 1}
-    assert config_entry.options  # options are kept
+    assert config_entry.options == ENTRY_OPTIONS  # options are kept
     mock_client.get_room_details.assert_awaited_once()  # credentials verified on the device
     mock_client.detect_house_id.assert_not_awaited()  # the stored house ID is checked instead
+    _assert_client_created(NEW_HOST, 1, NEW_CREDENTIALS)  # new address, stored house
     assert_no_credentials(caplog.text)
     assert NEW_CREDENTIALS[CONF_PASSWORD] not in caplog.text
 
@@ -442,6 +487,7 @@ async def test_reconfigure_same_host_new_credentials(
     "house",
     [
         pytest.param(ContromeNotFoundError("HTTP 404", status=404), id="house_id_missing"),
+        # Synthetic: the answer to an unknown house ID is not recorded (404 and [] handled).
         pytest.param(parse_temps([], house_id=1, tz=TZ), id="house_without_rooms"),
     ],
 )
@@ -457,6 +503,17 @@ async def test_reconfigure_house_not_found_aborts(
     assert result["reason"] == "wrong_device"
     assert config_entry.data == ENTRY_DATA
     assert config_entry.unique_id == f"http://{HOST}"
+
+
+async def test_reconfigure_house_without_rooms_aborts_without_selection(
+    hass: HomeAssistant, mock_client: MagicMock
+) -> None:
+    # No room selected: an empty house must still count as "not the same system".
+    mock_client.get_house.return_value = parse_temps([], house_id=1, tz=TZ)
+    config_entry = _entry(**{CONF_ROOMS: []})
+    result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
+    assert result["reason"] == "wrong_device"
+    assert config_entry.data == ENTRY_DATA
 
 
 async def test_reconfigure_no_selected_room_found_aborts(
@@ -489,12 +546,39 @@ async def test_reconfigure_address_of_other_entry_aborts(
     mock_client.get_room_details.assert_not_awaited()  # aborted before contacting the device
 
 
+async def test_reconfigure_address_of_ignored_entry_aborts(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
+) -> None:
+    MockConfigEntry(
+        domain=DOMAIN, source=SOURCE_IGNORE, data={}, unique_id=f"http://{NEW_HOST}"
+    ).add_to_hass(hass)
+    result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
+    assert result["reason"] == "already_configured"
+    assert config_entry.data == ENTRY_DATA
+
+
+@pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
+async def test_reconfigure_fails_closed_on_unusable_room_details(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry, error: Exception
+) -> None:
+    # Checked before the house: even 404 shows room_details_invalid, not wrong_device.
+    mock_client.get_room_details.side_effect = error
+    result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "room_details_invalid"}
+    assert config_entry.data == ENTRY_DATA
+    mock_client.get_house.assert_not_awaited()
+
+
 @pytest.mark.parametrize(
     ("method", "error", "key"),
     [
         ("get_room_details", ContromeAuthError("HTTP 401", status=401), "invalid_auth"),
         ("get_room_details", ContromeConnectionError("Timeout"), "cannot_connect"),
         ("get_house", ContromeApiDisabledError("disabled"), "api_disabled"),
+        # Not a 404: e.g. another HTTP server at the new address → form error, no abort.
+        ("get_house", ContromeResponseError("Invalid JSON from …", status=200), "no_house"),
+        ("get_house", RuntimeError("boom"), "unknown"),
         ("get_outputs", ContromeConnectionError("Timeout"), "cannot_connect"),
     ],
 )
@@ -517,6 +601,10 @@ async def test_reconfigure_errors_and_recovery(
     assert _suggested(result, CONF_PASSWORD) is None
     assert NEW_CREDENTIALS[CONF_PASSWORD] not in repr(result)
     assert config_entry.data == ENTRY_DATA  # nothing saved
+    if key == "unknown":  # logged with traceback: still no credentials in it
+        assert "Traceback" in caplog.text
+        assert_no_credentials(caplog.text)
+        assert NEW_CREDENTIALS[CONF_PASSWORD] not in caplog.text
 
     getattr(mock_client, method).side_effect = None
     result = await hass.config_entries.flow.async_configure(

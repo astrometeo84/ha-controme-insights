@@ -79,6 +79,7 @@
     "error": {
       "cannot_connect": "Der Mini-Server ist nicht erreichbar. Adresse prüfen und ob er im selben Netz ist.",
       "invalid_auth": "Benutzer oder Passwort ist falsch.",
+      "room_details_invalid": "Der Mini-Server hat für die Raumdetails keine auswertbare Antwort geliefert, die Zugangsdaten konnten nicht geprüft werden. Benutzer, Passwort und Adresse prüfen.",
       "api_disabled": "Die API ist auf dieser Controme-Anlage ausgeschaltet. In Controme freischalten und erneut versuchen.",
       "no_house": "Auf dieser Controme-Anlage wurde kein Haus mit Räumen gefunden.",
       "unknown": "Unerwarteter Fehler. Details stehen im Log.",

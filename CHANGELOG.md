@@ -23,6 +23,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Requires `aiocontrome` 0.2.0.
+- Setup, reauth and reconfigure fail closed: if `room_details/` gives no usable answer (404,
+  other HTTP errors, invalid JSON or HTML with status 200), the new form error
+  `room_details_invalid` is shown and nothing is saved. Previously setup continued without
+  verified credentials. Firmware without `room_details/` can no longer be set up.
 
 ### Security
 
@@ -30,3 +34,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   suggested value.
 - Tests prove that the password appears neither in the log nor in error messages, flow
   results or the diagnostics.
+- Diagnostics also remove the HTML-escaped and URL-encoded password and the Basic Auth token
+  from error texts.

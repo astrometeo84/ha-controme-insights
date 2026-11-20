@@ -29,7 +29,7 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 pythonpath = ["."]
 testpaths = ["tests"]
-addopts = "--cov=custom_components.controme_insights --cov-report=term-missing"
+addopts = "--cov=custom_components.controme_insights --cov-branch --cov-report=term-missing"
 
 [tool.ruff]
 line-length = 100

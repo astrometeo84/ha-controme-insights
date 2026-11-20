@@ -79,6 +79,7 @@
     "error": {
       "cannot_connect": "Cannot reach the Mini-Server. Check the address and that it is in the same network.",
       "invalid_auth": "Username or password is wrong.",
+      "room_details_invalid": "The Mini-Server gave no usable answer for the room details, so the credentials could not be verified. Check username, password and address.",
       "api_disabled": "The API is disabled on this Controme system. Enable it in Controme and try again.",
       "no_house": "No house with rooms was found on this Controme system.",
       "unknown": "Unexpected error. See the log for details.",

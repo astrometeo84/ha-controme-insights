@@ -8,12 +8,15 @@ gets the same placeholder everywhere. Error texts additionally lose host and cre
 from __future__ import annotations
 
 import dataclasses
+import html
 import re
 from collections.abc import Mapping
 from datetime import datetime
 from typing import Any
+from urllib.parse import quote, quote_plus
 
 from aiocontrome import REDACTED, redact
+from aiocontrome.client import basic_auth_header
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -61,17 +64,24 @@ async def async_get_config_entry_diagnostics(
 class _Scrubber:
     """Removes host and credentials of the entry from error texts.
 
-    Base URL, host and password are replaced anywhere (longest first); the username only as a
-    whole word, so a short name does not destroy the text.
+    Base URL, host and the password in the forms ``aiocontrome`` redacts (raw, HTML-escaped,
+    URL-encoded, Basic Auth token with and without ``Basic ``) are replaced anywhere, longest
+    first; the username only as a whole word, so a short name does not destroy the text. Empty
+    values are skipped.
     """
 
     def __init__(self, entry: ContromeConfigEntry, base_url: str) -> None:
-        values = {base_url, entry.data.get(CONF_HOST), entry.data.get(CONF_PASSWORD)}
-        self._literals = sorted((str(v) for v in values if v), key=len, reverse=True)
-        username = entry.data.get(CONF_USERNAME)
-        self._username = (
-            re.compile(rf"(?<!\w){re.escape(str(username))}(?!\w)") if username else None
-        )
+        host = str(entry.data.get(CONF_HOST) or "")
+        username = str(entry.data.get(CONF_USERNAME) or "")
+        password = str(entry.data.get(CONF_PASSWORD) or "")
+        values = {base_url, host}
+        if password:
+            values |= {password, html.escape(password), quote(password), quote_plus(password)}
+            if ":" not in username:
+                header = basic_auth_header(username, password)
+                values |= {header, header.removeprefix("Basic ")}
+        self._literals = sorted((v for v in values if v), key=len, reverse=True)
+        self._username = re.compile(rf"(?<!\w){re.escape(username)}(?!\w)") if username else None
 
     def __call__(self, text: str) -> str:
         for literal in self._literals:
