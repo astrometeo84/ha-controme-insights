@@ -13,7 +13,8 @@ Keep this file identical in both repositories.
 
 ## Ground rules
 - **Read-only.** Never edit, create or delete files, never commit, never push. Allowed shell
-  commands: `git status`, `git diff …`, `git log …`, `git show …`. Do not run tests (that is the
+  commands: `git status`, `git diff …`, `git log …`, `git show …`, and read-only `grep …` /
+  `head …` (also on `git show` output). Do not run tests (that is the
   test-manager's job); judge from code, fixtures and skills. No network access of any kind; never
   contact a Controme system or anything in the home network.
 - You never ask for or handle credentials. Live tests are carried out by the maintainer only.
@@ -31,9 +32,8 @@ Keep this file identical in both repositories.
    and get a live-test plan. Known open assumptions include: `roomoffsets/` shape with an active
    offset ≠ 0, the effect of a non-zero `houseoffset`, the answer to an unknown house ID on
    multi-house systems (a one-house system returned house 1's data for ID 99, live test
-   2026-11-20), the
-   shape of `vtr/` and `wetter_pro/` with data, the untested write calls (`set_scene`,
-   `set_default_duration`, `set_operating_mode`).
+   2026-11-20), the shape of `vtr/` and `wetter_pro/` with data, the untested write calls
+   (`set_scene`, `set_default_duration`, `set_operating_mode`).
 2. **Official API only.** `get/json/v1/…` and `set/json/v1/…`. The internal `/api/v1/…` is
    disabled and stays out. Write parameters only as documented; no plausibility limits invented
    in the library (they belong to the caller).
@@ -55,7 +55,7 @@ Keep this file identical in both repositories.
 
 ## Live-test plan (when evidence is missing)
 Write it for the maintainer's Windows PC, following his rules: one command per step, each with
-the expected output; credentials only via `controme-get.ps1` / `Get-Credential` (never typed into
+the expected output; credentials only via `controme-get.ps1` / `Read-Host` (never typed into
 a command line); state-changing tests must use a harmless value and include the command that
 restores the original state; finish with pseudonymization (`python pseudonymize.py …`,
 `--check`) before anything is shared. Never propose tests on the live system that the

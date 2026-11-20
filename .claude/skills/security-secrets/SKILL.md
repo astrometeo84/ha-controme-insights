@@ -66,9 +66,10 @@ Neither the library nor the integration can change this. README files must say s
 
 ## Maintainer PC (live tests)
 Claude never asks for or handles real credentials. Live tests are instructions for the user
-(skill `live-test-plan`, script `controme-get.ps1`): credentials come from `Get-Credential` or a
-SecretManagement vault and reach curl via stdin (`curl.exe -K -`), so they appear neither on the
-command line nor in the PowerShell history.
+(skill `live-test-plan`, script `controme-get.ps1`): credentials come from `Read-Host` (password
+with `-AsSecureString`) or a SecretManagement vault; `Get-Credential` is avoided because its
+dialog can stay hidden behind other windows (observed 2026-11-20). They reach curl via stdin
+(`curl.exe -K -`), so they appear neither on the command line nor in the PowerShell history.
 
 ## Review checklist
 - [ ] No secret in code, tests, fixtures, docs, commit message or PR text
