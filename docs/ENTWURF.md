@@ -50,8 +50,10 @@ Integration. Controme Insights baut das nicht nach.
 | `set/json/v1/{h}/roomoffset/…` | dokumentiert | ja | bei Bedarf, Erneuerung alle 5 min | API-Offset, Boost |
 | `set/json/v1/{h}/quickui/` | dokumentiert | ja | bei Bedarf | Standarddauer Schnellbedienung |
 
-**Rückfall:** Liefert `room_details` einen Fehler (z. B. ältere Firmware), laufen alle Entitäten aus
-`outs`/`temps` weiter. Nur die `room_details`-Entitäten werden „nicht verfügbar“.
+**Rückfall:** Liefert `room_details` im laufenden Betrieb einen Fehler, laufen alle Entitäten aus
+`outs`/`temps` weiter. Nur die `room_details`-Entitäten werden „nicht verfügbar“. Bei Einrichtung,
+Reauth und Reconfigure muss `room_details` dagegen auswertbar antworten (fail closed, siehe 4b);
+eine Firmware ohne diesen Endpunkt lässt sich daher nicht einrichten.
 
 **Hinweis:** `rltemps` wird nicht gebraucht – `temps` enthält dieselben Rücklauffühler plus alle anderen.
 
@@ -112,6 +114,40 @@ Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
     "write_quickui": False,                    # Schnellbedienung
   }
   ```
+
+### 4b. Zugangsdaten erneuern und Verbindung ändern
+
+- **Prüfung der Zugangsdaten (alle Flows, fail closed):** `room_details/` ist der einzige lesende
+  Endpunkt mit Authentifizierung. 401/403 → Fehler „Benutzer oder Passwort falsch“. Jede andere nicht
+  auswertbare Antwort (404, andere HTTP-Fehler, ungültiges JSON oder HTML mit 200, unerwartete
+  Struktur) → Fehler `room_details_invalid` („Antwort nicht auswertbar, Zugangsdaten und Adresse
+  prüfen“); es wird **nichts gespeichert**. Live noch nicht belegt: wie `room_details/` auf falsche
+  Zugangsdaten antwortet (angenommen 401/403; aufgezeichnet ist nur 403 mit leerem Body bei Schreibaufrufen).
+  **Offene Annahme:** Eine leere Liste `[]` von `room_details/` gilt als bestanden (der Parser
+  liefert dann keine Räume, aber keinen Fehler); `{}` und `null` ergeben `room_details_invalid`.
+  Ob `[]` auch bei falschen oder fehlenden Zugangsdaten vorkommen kann, klärt der Live-Test
+  (`room_details/` mit falschem und ohne Passwort); danach ggf. als nicht auswertbar behandeln.
+- **Passwort:** wird in Reauth und Reconfigure immer neu eingegeben, nie vorbelegt und nach einem
+  Formularfehler nie zurückgegeben (nur Host und Benutzer).
+- **Reauth** (startet automatisch bei 401/403): fragt Benutzer und Passwort, prüft gegen das Gerät
+  unter dem gespeicherten Host und der gespeicherten Haus-ID, speichert nur bei Erfolg.
+- **Reconfigure** („Neu konfigurieren“, vor allem nach einem IP-Wechsel): fragt Host, Benutzer und
+  Passwort. Ablauf:
+  1. Gehört die neue Adresse schon zu einem **anderen** Eintrag (auch einem ignorierten) →
+     Abbruch `already_configured`, ohne das Gerät anzusprechen.
+  2. Prüfung wie bei der Einrichtung (Verbindung, Zugangsdaten über `room_details/`, API), aber mit
+     der gespeicherten Haus-ID statt automatischer Erkennung.
+  3. **Plausibilität statt Seriennummer** (die API liefert keine): Unter der neuen Adresse muss die
+     gespeicherte Haus-ID existieren und mindestens einer der ausgewählten Räume (ohne Auswahl:
+     irgendein Raum). Sonst Abbruch `wrong_device`. Live noch nicht belegt: die Antwort von `temps/`
+     auf eine unbekannte Haus-ID (404 und `[]` werden beide als „fehlt“ behandelt; andere Antworten
+     ergeben den Formularfehler „kein Haus gefunden“).
+  4. Bei Erfolg: neue Verbindungsdaten, **Unique ID folgt der neuen Adresse** (`http://<host>`), ein
+     automatisch erzeugter Titel `Controme (<host>)` folgt dem Host, ein umbenannter Titel bleibt.
+     Optionen bleiben unverändert; die Integration lädt neu.
+- **Formularfehler:** `cannot_connect`, `invalid_auth`, `room_details_invalid`, `api_disabled`,
+  `no_house`, `unknown`. **Abbrüche:** `reauth_successful`, `reconfigure_successful`,
+  `already_configured`, `wrong_device`.
 
 ---
 
@@ -348,6 +384,14 @@ Nur verfügbar, wenn Schreibfunktionen freigegeben sind.
 
 Über „Diagnose herunterladen“ an der Integration: Rohantworten aller Endpunkte, erkannte Räume, Fühler,
 Anbindungen, Fehlerzähler. Automatisch geschwärzt: Host, Benutzer, Passwort, MAC-/Fühler-IDs.
+
+**Ist-Stand:** Eintrag (Titel, Host, Benutzer, Passwort geschwärzt; Optionen mit Fühler-IDs als
+Platzhalter), System-Info, je Coordinator letzter Erfolg (Zeitpunkt) und letzter Fehler (ohne Host
+und Zugangsdaten, auch nicht in HTML-/URL-kodierter Form) sowie die **geparsten Modelle** aller
+Coordinators. Options, Info und Daten laufen in einem Aufruf durch `aiocontrome.redact()`, damit
+derselbe Fühler überall denselben Platzhalter bekommt.
+**Folgt mit den Entitäten:** Rohantworten über `client.get_raw()` (zeigen auch Schlüssel, die der
+Parser verwirft) und Fehlerzähler.
 
 ---
 

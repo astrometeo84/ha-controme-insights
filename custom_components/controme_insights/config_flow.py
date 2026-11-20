@@ -97,12 +97,19 @@ def _client(
     )
 
 
+class _RoomDetailsInvalid(Exception):
+    """``room_details/`` gave no usable answer, so the credentials could not be verified."""
+
+
 async def _validate(client: ContromeClient, house_id: int | None = None) -> int:
     """Check the credentials and return the house ID (detected unless ``house_id`` is given).
 
     ``room_details`` is the only read endpoint with authentication, so it verifies the
-    credentials. If it fails for another reason (e.g. older firmware), setup continues: only
-    the entities based on it will be unavailable.
+    credentials. Fail closed: any answer that cannot be evaluated (404, other HTTP errors,
+    invalid JSON or HTML with status 200, unexpected shape) aborts with
+    ``room_details_invalid`` and nothing is saved; otherwise wrong credentials could be
+    stored. Not yet proven in a live test: how ``room_details/`` answers wrong credentials
+    (401/403 assumed; only 403 with an empty body is recorded, for write calls).
     """
     if house_id is None:
         house_id = await client.detect_house_id()
@@ -111,7 +118,7 @@ async def _validate(client: ContromeClient, house_id: int | None = None) -> int:
     except ContromeAuthError:
         raise
     except ContromeResponseError as err:
-        _LOGGER.info("room_details/ not available, continuing without it: %s", err)
+        raise _RoomDetailsInvalid from err
     return house_id
 
 
@@ -129,7 +136,10 @@ async def _check_same_system(client: ContromeClient, house_id: int, rooms: Itera
     """Plausibility check instead of a serial number (the API reports none).
 
     The stored house ID must exist at the address and contain at least one of the selected
-    rooms (any room if none is selected). Credentials and API are verified as in the setup.
+    rooms (any room if none is selected). Credentials and API are verified as in the setup,
+    fail closed: if ``room_details/`` gives no usable answer, the form shows
+    ``room_details_invalid`` before the house is checked. Not proven live: how the Mini-Server
+    answers ``temps/`` for an unknown house ID (404 and ``[]`` are both handled).
     """
     await _validate(client, house_id)
     try:
@@ -158,6 +168,8 @@ def _error_key(err: Exception) -> str:
     """Translation key of the form error for ``err``."""
     if isinstance(err, ContromeAuthError):
         return "invalid_auth"
+    if isinstance(err, _RoomDetailsInvalid):
+        return "room_details_invalid"
     if isinstance(err, ContromeApiDisabledError):
         return "api_disabled"
     if isinstance(err, ContromeConnectionError):
@@ -511,6 +523,8 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
                 self.hass, host, user_input[CONF_USERNAME], user_input[CONF_PASSWORD], house_id
             )
             unique_id = client.base_url
+            # Ignored entries count too: the user chose to ignore this Controme system, so it
+            # must not be taken over silently by reconfiguring another entry to its address.
             if any(
                 other.unique_id == unique_id and other.entry_id != entry.entry_id
                 for other in self._async_current_entries(include_ignore=True)

@@ -6,8 +6,15 @@ FPS blocks, system sensors and transmission monitoring.
 
 > Status: early development – not ready for use yet. Specification: `docs/ENTWURF.md` (German).
 
-Requires a Controme Smart-Heat system with the local JSON API enabled. Not affiliated with
-Controme GmbH. License: GPL-3.0.
+Not affiliated with Controme GmbH. License: GPL-3.0.
+
+## Requirements
+
+- A Controme Smart-Heat system with the local JSON API enabled.
+- Firmware that provides `get/json/v1/<house>/room_details/`. It is the only read endpoint that
+  checks the credentials, so setup, reauthentication and reconfiguration verify them there. If
+  it gives no usable answer (for example 404 on firmware without it), setup stops with the
+  error `room_details_invalid` and nothing is saved.
 
 ## Security
 
