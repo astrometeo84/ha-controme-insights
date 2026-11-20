@@ -123,6 +123,10 @@ Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
   Struktur) → Fehler `room_details_invalid` („Antwort nicht auswertbar, Zugangsdaten und Adresse
   prüfen“); es wird **nichts gespeichert**. Live noch nicht belegt: wie `room_details/` auf falsche
   Zugangsdaten antwortet (angenommen 401/403; aufgezeichnet ist nur 403 mit leerem Body bei Schreibaufrufen).
+  **Offene Annahme:** Eine leere Liste `[]` von `room_details/` gilt als bestanden (der Parser
+  liefert dann keine Räume, aber keinen Fehler); `{}` und `null` ergeben `room_details_invalid`.
+  Ob `[]` auch bei falschen oder fehlenden Zugangsdaten vorkommen kann, klärt der Live-Test
+  (`room_details/` mit falschem und ohne Passwort); danach ggf. als nicht auswertbar behandeln.
 - **Passwort:** wird in Reauth und Reconfigure immer neu eingegeben, nie vorbelegt und nach einem
   Formularfehler nie zurückgegeben (nur Host und Benutzer).
 - **Reauth** (startet automatisch bei 401/403): fragt Benutzer und Passwort, prüft gegen das Gerät
