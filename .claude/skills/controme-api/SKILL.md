@@ -18,11 +18,20 @@ The dev container has no route to the home network by design.
 
 - Base URL: `http://<host>/` – HTTP only on the local Mini-Server (no TLS).
 - House ID `h`: usually `1` (auto-detect: first ID whose `rooms` is non-empty).
-- Read endpoints under `get/json/v1/{h}/…` need **no auth**, except `room_details` (Basic Auth).
+  **Live test 2026-11-20 (one-house system):** `temps/` and `room_details/` with `h = 99` return the
+  same data as house 1. Open: whether the ID is ignored or falls back to the only house, and how
+  systems with several houses behave. Consequence: the house ID is **no** device or plausibility
+  check, and auto-detect always finds `1` here.
+- Read endpoints under `get/json/v1/{h}/…` need **no auth – including `room_details`**.
+  ~~`room_details` needs Basic Auth~~ – **refuted by the live test 2026-11-20**: without
+  credentials, with a wrong and with the right password it answered 200 with the same data
+  (compared with a local diff script; only measurements and timestamps differed). Basic Auth is
+  accepted but not checked. Credentials are checked **only by write calls** (see below).
 - Write endpoints under `set/json/v1/{h}/…` are POST with form fields incl. `user` and `password`
   (see "Write endpoints" below; parameters from the official docs, never guess).
 - Trailing slash matters on some endpoints – always request with trailing slash.
-- 404 returns a huge Django debug HTML page (~240 kB, lists all server routes).
+- 404 for an **unknown route** returns a huge Django debug HTML page (~240 kB, lists all server
+  routes). A write call to an unknown room answers 404 with an **empty** body instead (see below).
   **Never log full error bodies**; log status + first 200 chars at most.
 
 ## Read endpoints
@@ -34,7 +43,7 @@ The dev container has no route to the home network by design.
 | `temps/` | no | `temps.json` | floors → `raeume` with `sensoren`, offsets, scene info |
 | `outs/` | no | `outs_pro_a.json`, `outs_pro_b.json` | floors → `raeume` → `ausgang: {"<n>": value}` |
 | `rltemps/{room}/` | no | `rltemps_<id>.json` | list of return-flow sensors |
-| `room_details/` | **Basic Auth** | `room_details_*.json` | floors → `rooms` (camelCase, rich) – undocumented, used by the official HA integration |
+| `room_details/` | no (~~Basic Auth~~, refuted 2026-11-20: accepted, not checked) | `room_details_*.json` | floors → `rooms` (camelCase, rich) – undocumented, used by the official HA integration |
 | `upcomingoffsets/` | no | `upcomingoffsets.json` | houses/rooms → module → `[[iso_time, id|null, kind], …]` |
 | `fps/` | no | `fps.json` | `{"<fps_id>": {...}}` |
 | `vtr/`, `wetter_pro/` | no | `vtr_empty.json`, `wetter_pro_empty.json` | `{}` when not configured; shape with data unknown → client passes the object through deep-frozen (`get_vtr`, `get_weather_pro`), no model |
@@ -44,6 +53,17 @@ The dev container has no route to the home network by design.
 
 POST, form-encoded. Every request contains `user` and `password` (plain HTTP, no TLS on the
 Mini-Server → local network only). Wrong credentials → **403 with an empty `text/html` body**.
+Credentials are checked **only here, by write calls** – no read endpoint checks them (live test
+2026-11-20, see "Basics").
+
+**Checking credentials without effect (live test 2026-11-20, not recorded as fixture):**
+`roomoffset/99999/` (room does not exist) with `offset=0.00`:
+- right credentials → **404 with an empty `text/html` body** (no Django debug page),
+- wrong credentials → **403 with an empty body**.
+
+The server checks the credentials **before** the room, so such a call verifies the credentials
+without changing anything. Only tested with room `99999`.
+
 Success (live test 2026-11-15, fixtures `write/*.txt`): **HTTP 200 with an empty `text/html` body**
 for `soll`, `roomoffset`, `houseoffset`; `ziel` answers with JSON
 `{"duration": 30, "full_expire_time": "YYYY-MM-DD HH:MM", "temperature": 19.0, "time": "HH:MM"}`.
@@ -100,7 +120,7 @@ offsets) – plausibility limits belong to the caller.
 - `ausgang` is always `null` here – do not rely on it.
 - Redundant with `temps` (prefer `temps`).
 
-### room_details (Basic Auth)
+### room_details (no auth checked, see "Basics")
 - `skip_loops=true` makes no difference here; `heatingLoops` is always `[]`.
 - `sensors` and `unassignedReturnSensors` are empty – return sensors come only from `temps`.
 - `offsets`: dict of source → `{"raum": float, "haus": float}`; the set of sources **varies per room**
