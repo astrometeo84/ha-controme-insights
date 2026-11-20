@@ -48,8 +48,8 @@ from .conftest import (
 SENSOR_ID = re.compile(r"[0-9a-f]{2}(?:_[0-9a-f]{2}){7}", re.IGNORECASE)
 MAC = re.compile(r"[0-9a-f]{2}(?::[0-9a-f]{2}){3,5}", re.IGNORECASE)
 IPV4 = re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])")
-SPECIAL_PASSWORD = "pw&test+SECRET%"
-"""Changes under HTML escaping and URL encoding."""
+SPECIAL_PASSWORD = "pw&test+SECRET% x"
+"""Changes under HTML escaping and URL encoding; the space makes quote and quote_plus differ."""
 
 
 async def _diagnostics(hass: HomeAssistant, entry: MockConfigEntry) -> dict[str, Any]:

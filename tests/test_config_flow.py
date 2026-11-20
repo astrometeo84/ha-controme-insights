@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import html
 import logging
 from collections.abc import Generator
 from typing import Any, cast
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
+from urllib.parse import quote, quote_plus
 
 import pytest
 from aiocontrome import (
@@ -56,12 +58,34 @@ ROOM_DETAILS_INVALID = [
     pytest.param(ContromeNotFoundError("HTTP 404", status=404), id="404"),
     pytest.param(ContromeResponseError("Invalid JSON from …: <html>", status=200), id="html_200"),
     pytest.param(ContromeResponseError("HTTP 500", status=500), id="500"),
+    # A debug page echoing the entered passwords in every form: must reach neither log nor form.
+    pytest.param(
+        ContromeResponseError(
+            "HTTP 500: "
+            + " ".join(
+                form
+                for password in (TEST_PASSWORD, NEW_CREDENTIALS[CONF_PASSWORD])
+                for form in (password, html.escape(password), quote(password), quote_plus(password))
+            )
+            + f" user={TEST_USER}",
+            status=500,
+        ),
+        id="500_echoing_credentials",
+    ),
 ]
+
+
+def _assert_no_secret_leak(caplog: pytest.LogCaptureFixture, result: Any) -> None:
+    """Neither log nor form result contain a password that was entered in the flow."""
+    assert_no_credentials(caplog.text)
+    assert NEW_CREDENTIALS[CONF_PASSWORD] not in caplog.text
+    assert TEST_PASSWORD not in repr(result)
+    assert NEW_CREDENTIALS[CONF_PASSWORD] not in repr(result)
 
 
 def _assert_client_created(host: str, house_id: int | None, credentials: dict[str, str]) -> None:
     """The flow built its client with exactly these values (the patched class records it)."""
-    client_class = cast(MagicMock, config_flow.ContromeClient)
+    client_class = cast(MagicMock, vars(config_flow)["ContromeClient"])  # patched in conftest
     client_class.assert_called_with(
         ANY,
         host,
@@ -304,10 +328,14 @@ def test_sensor_label_without_value_and_unknown_connection() -> None:
 
 @pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
 async def test_user_flow_fails_closed_on_unusable_room_details(
-    hass: HomeAssistant, mock_client: MagicMock, error: Exception
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+    error: Exception,
 ) -> None:
     # Also 404 (e.g. older firmware without the undocumented endpoint): the credentials cannot
     # be verified, so nothing is created.
+    caplog.set_level(logging.DEBUG)
     mock_client.get_room_details.side_effect = error
     flow_id = await _start(hass)
     result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
@@ -315,6 +343,12 @@ async def test_user_flow_fails_closed_on_unusable_room_details(
     assert result["errors"] == {"base": "room_details_invalid"}
     assert _suggested(result, CONF_PASSWORD) is None
     assert hass.config_entries.async_entries(DOMAIN) == []
+    _assert_no_secret_leak(caplog, result)
+
+    # The form can be submitted again and succeeds once room_details/ answers.
+    mock_client.get_room_details.side_effect = None
+    result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
+    assert result["step_id"] == "rooms"
 
 
 @pytest.mark.parametrize(
@@ -401,15 +435,27 @@ async def test_reauth_updates_credentials(
 
 @pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
 async def test_reauth_fails_closed_on_unusable_room_details(
-    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry, error: Exception
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+    error: Exception,
 ) -> None:
+    caplog.set_level(logging.DEBUG)
     config_entry.add_to_hass(hass)
     result = await config_entry.start_reauth_flow(hass)
     mock_client.get_room_details.side_effect = error
     result = await hass.config_entries.flow.async_configure(result["flow_id"], NEW_CREDENTIALS)
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "room_details_invalid"}
+    assert _suggested(result, CONF_PASSWORD) is None
     assert config_entry.data == ENTRY_DATA  # nothing saved
+    _assert_no_secret_leak(caplog, result)
+
+    mock_client.get_room_details.side_effect = None
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], NEW_CREDENTIALS)
+    assert result["reason"] == "reauth_successful"
+    assert config_entry.data == {**ENTRY_DATA, **NEW_CREDENTIALS}
 
 
 # --- Reconfigure ----------------------------------------------------------------------------
@@ -417,12 +463,13 @@ async def test_reauth_fails_closed_on_unusable_room_details(
 NEW_HOST = "192.0.2.20"
 
 
-def _entry(*, title: str = f"Controme ({HOST})", **option_changes: Any) -> MockConfigEntry:
+def _entry(*, title: str = f"Controme ({HOST})", rooms: list[int] | None = None) -> MockConfigEntry:
+    options = dict(ENTRY_OPTIONS) if rooms is None else {**ENTRY_OPTIONS, CONF_ROOMS: rooms}
     return MockConfigEntry(
         domain=DOMAIN,
         title=title,
         data=ENTRY_DATA,
-        options={**ENTRY_OPTIONS, **option_changes},
+        options=options,
         unique_id=f"http://{HOST}",
     )
 
@@ -510,7 +557,7 @@ async def test_reconfigure_house_without_rooms_aborts_without_selection(
 ) -> None:
     # No room selected: an empty house must still count as "not the same system".
     mock_client.get_house.return_value = parse_temps([], house_id=1, tz=TZ)
-    config_entry = _entry(**{CONF_ROOMS: []})
+    config_entry = _entry(rooms=[])
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "wrong_device"
     assert config_entry.data == ENTRY_DATA
@@ -519,7 +566,7 @@ async def test_reconfigure_house_without_rooms_aborts_without_selection(
 async def test_reconfigure_no_selected_room_found_aborts(
     hass: HomeAssistant, mock_client: MagicMock
 ) -> None:
-    config_entry = _entry(**{CONF_ROOMS: [998, 999]})
+    config_entry = _entry(rooms=[998, 999])
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "wrong_device"
     assert config_entry.data == ENTRY_DATA
@@ -528,7 +575,7 @@ async def test_reconfigure_no_selected_room_found_aborts(
 async def test_reconfigure_without_selected_rooms_needs_any_room(
     hass: HomeAssistant, mock_client: MagicMock
 ) -> None:
-    config_entry = _entry(**{CONF_ROOMS: []})
+    config_entry = _entry(rooms=[])
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "reconfigure_successful"
 
@@ -555,19 +602,33 @@ async def test_reconfigure_address_of_ignored_entry_aborts(
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "already_configured"
     assert config_entry.data == ENTRY_DATA
+    mock_client.get_room_details.assert_not_awaited()  # aborted before contacting the device
 
 
 @pytest.mark.parametrize("error", ROOM_DETAILS_INVALID)
 async def test_reconfigure_fails_closed_on_unusable_room_details(
-    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry, error: Exception
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+    error: Exception,
 ) -> None:
     # Checked before the house: even 404 shows room_details_invalid, not wrong_device.
+    caplog.set_level(logging.DEBUG)
     mock_client.get_room_details.side_effect = error
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "room_details_invalid"}
+    assert _suggested(result, CONF_PASSWORD) is None
     assert config_entry.data == ENTRY_DATA
     mock_client.get_house.assert_not_awaited()
+    _assert_no_secret_leak(caplog, result)
+
+    mock_client.get_room_details.side_effect = None
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_HOST: NEW_HOST, **NEW_CREDENTIALS}
+    )
+    assert result["reason"] == "reconfigure_successful"
 
 
 @pytest.mark.parametrize(
