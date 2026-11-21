@@ -97,28 +97,28 @@ def _client(
     )
 
 
-class _RoomDetailsInvalid(Exception):
-    """``room_details/`` gave no usable answer, so the credentials could not be verified."""
+class _CannotVerify(Exception):
+    """``verify_credentials()`` got an unexpected answer, so the credentials are unverified."""
 
 
 async def _validate(client: ContromeClient, house_id: int | None = None) -> int:
     """Check the credentials and return the house ID (detected unless ``house_id`` is given).
 
-    ``room_details`` is the only read endpoint with authentication, so it verifies the
-    credentials. Fail closed: any answer that cannot be evaluated (404, other HTTP errors,
-    invalid JSON or HTML with status 200, unexpected shape) aborts with
-    ``room_details_invalid`` and nothing is saved; otherwise wrong credentials could be
-    stored. Not yet proven in a live test: how ``room_details/`` answers wrong credentials
-    (401/403 assumed; only 403 with an empty body is recorded, for write calls).
+    Read endpoints do not check credentials (live test 2026-11-20), so they are verified with
+    ``client.verify_credentials()``: a POST to ``roomoffset/99999/`` (a room that does not
+    exist) with offset 0, which showed no effect live but is still a write call. Call it only
+    here, once per submitted form; never in the coordinators. Fail closed: rejected
+    credentials raise ``ContromeAuthError``, any unexpected answer ``_CannotVerify``; in both
+    cases nothing is saved.
     """
     if house_id is None:
         house_id = await client.detect_house_id()
     try:
-        await client.get_room_details()
+        await client.verify_credentials()
     except ContromeAuthError:
         raise
     except ContromeResponseError as err:
-        raise _RoomDetailsInvalid from err
+        raise _CannotVerify from err
     return house_id
 
 
@@ -135,11 +135,10 @@ class _WrongDevice(Exception):
 async def _check_same_system(client: ContromeClient, house_id: int, rooms: Iterable[int]) -> None:
     """Plausibility check instead of a serial number (the API reports none).
 
-    The stored house ID must exist at the address and contain at least one of the selected
-    rooms (any room if none is selected). Credentials and API are verified as in the setup,
-    fail closed: if ``room_details/`` gives no usable answer, the form shows
-    ``room_details_invalid`` before the house is checked. Not proven live: how the Mini-Server
-    answers ``temps/`` for an unknown house ID (404 and ``[]`` are both handled).
+    The house at the address must contain at least one of the selected rooms (any room if none
+    is selected); 404 from ``temps/`` counts as "not found". The house ID is no evidence: a
+    one-house system returns its data for every house ID (live test 2026-11-20). Credentials
+    are verified first, as in the setup (fail closed).
     """
     await _validate(client, house_id)
     try:
@@ -168,8 +167,8 @@ def _error_key(err: Exception) -> str:
     """Translation key of the form error for ``err``."""
     if isinstance(err, ContromeAuthError):
         return "invalid_auth"
-    if isinstance(err, _RoomDetailsInvalid):
-        return "room_details_invalid"
+    if isinstance(err, _CannotVerify):
+        return "cannot_verify"
     if isinstance(err, ContromeApiDisabledError):
         return "api_disabled"
     if isinstance(err, ContromeConnectionError):
@@ -511,8 +510,8 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Change host (e.g. a new IP address) and credentials; the password is entered again.
 
-        The API reports no serial number, so the new address is accepted if it holds the stored
-        house with at least one of the selected rooms. The unique ID follows the new address.
+        The API reports no serial number, so the new address is accepted if its house contains
+        at least one of the selected rooms. The unique ID follows the new address.
         """
         entry = self._get_reconfigure_entry()
         errors: dict[str, str] = {}
@@ -555,7 +554,6 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=self.add_suggested_values_to_schema(STEP_USER_SCHEMA, suggested),
             errors=errors,
-            description_placeholders={"house_id": str(entry.data[CONF_HOUSE_ID])},
         )
 
 

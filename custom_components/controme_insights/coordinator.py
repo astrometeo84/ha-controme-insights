@@ -42,7 +42,7 @@ class ContromeRuntimeData:
     outputs: ContromeCoordinator[tuple[Output, ...]]
     """``outs/``: valve outputs."""
     room_details: ContromeCoordinator[tuple[RoomDetails, ...]]
-    """``room_details/`` (Basic Auth, undocumented): may fail on older firmware."""
+    """``room_details/`` (undocumented, no credentials needed): may fail on older firmware."""
     upcoming: ContromeCoordinator[UpcomingOffsets]
     fps: ContromeCoordinator[Mapping[int, Fps]]
 

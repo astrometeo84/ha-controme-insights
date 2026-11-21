@@ -11,16 +11,22 @@ Not affiliated with Controme GmbH. License: GPL-3.0.
 ## Requirements
 
 - A Controme Smart-Heat system with the local JSON API enabled.
-- Firmware that provides `get/json/v1/<house>/room_details/`. It is the only read endpoint that
-  checks the credentials, so setup, reauthentication and reconfiguration verify them there. If
-  it gives no usable answer (for example 404 on firmware without it), setup stops with the
-  error `room_details_invalid` and nothing is saved.
+- Username and password of a Controme user. Read endpoints do not check them (live test
+  2026-11-20), so setup, reauthentication and reconfiguration verify them with a POST to
+  `set/json/v1/<house>/roomoffset/99999/` (a room that does not exist) with offset 0: the
+  Mini-Server checks the credentials before the room and answers 404 (valid) or 403 (wrong).
+  No effect was observed in a live test, but it is still a write call; it runs only in these
+  flows, never while polling. Any other answer stops with the error `cannot_verify` and
+  nothing is saved.
+- `room_details/` (undocumented) is optional: without it only the room details entities are
+  unavailable.
 
 ## Security
 
 - The Controme Mini-Server speaks **plain HTTP only** (no TLS). Username and password travel
-  unencrypted in your local network (HTTP Basic Auth for the room details, form fields for
-  writes). Use the integration only in a trusted local network.
+  unencrypted in your local network as form fields of every write call and of the credential
+  check. Read calls send no credentials (HTTP Basic Auth only as a fallback if `room_details/`
+  answers 401/403). Use the integration only in a trusted local network.
 - Home Assistant stores the credentials in `.storage/core.config_entries`, like those of every
   other integration. The integration keeps them out of logs, error messages and the diagnostics
   download.
