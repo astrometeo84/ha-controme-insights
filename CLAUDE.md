@@ -59,6 +59,8 @@ uv run mypy custom_components
 - Spezifikation ändern nur nach Rückfrage; Abweichungen in `docs/ENTWURF.md` nachziehen.
 - Während der Entwicklung `aiocontrome` als lokale Pfad-Abhängigkeit (`../aiocontrome`) nutzen;
   vor einem Release die PyPI-Version eintragen.
+- Für HA-Muster die Upstream-Skills `ha-integration-knowledge`, `ha-quality-scale-verify` und
+  `ha-review` nutzen (siehe `.claude/upstream/README.md`).
 - Vor jedem Push die Subagents `test-manager` und – bei Bezug zu Endpunkten, Parsern, Modellen,
   Schreibaufrufen oder Unique IDs – `api-expert` aufrufen. Befunde unter BLOCKIERT beheben,
   die Berichte im PR-Text kurz zusammenfassen.
