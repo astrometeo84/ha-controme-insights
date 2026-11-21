@@ -49,7 +49,7 @@ Integration. Controme Insights baut das nicht nach.
 | `get/json/v1/{h}/vtr/`, `fps/`, `wetter_pro/` | dokumentiert | nein | 5 min | nur wenn die Anlage Daten liefert (bei dir: leer) |
 | `set/json/v1/{h}/roomoffset/…` | dokumentiert | ja | bei Bedarf, Erneuerung alle 5 min | API-Offset, Boost |
 | `set/json/v1/{h}/quickui/` | dokumentiert | ja | bei Bedarf | Standarddauer Schnellbedienung |
-| `set/json/v1/{h}/roomoffset/99999/` | dokumentiert (Raum existiert nicht) | ja | nur in Einrichtung, Reauth, Reconfigure | Prüfung der Zugangsdaten (`verify_credentials()`, siehe 4b) |
+| `set/json/v1/{h}/roomoffset/99999/` | Endpunkt dokumentiert; Verhalten bei unbekanntem Raum nur live beobachtet (20.11.2026, nicht als Fixture) | ja | nur in Einrichtung, Reauth, Reconfigure | Prüfung der Zugangsdaten (`verify_credentials()`, siehe 4b) |
 
 **Rückfall:** Liefert `room_details` im laufenden Betrieb einen Fehler, laufen alle Entitäten aus
 `outs`/`temps` weiter. Nur die `room_details`-Entitäten werden „nicht verfügbar“. Das gilt auch
@@ -63,9 +63,10 @@ für eine Firmware ohne diesen Endpunkt: Sie lässt sich einrichten, die Zugangs
 ## 4. Einrichtung (Config Flow)
 
 1. **Verbindung:** Host, Haus-ID (Standard 1, automatisch erkannt), Benutzer, Passwort.
-   Bei `http://` ein Hinweis, dass das Passwort unverschlüsselt übertragen wird. Die
-   Zugangsdaten werden mit `verify_credentials()` geprüft (fail closed, siehe 4b). Auf Anlagen
-   mit einem Haus liefert jede Haus-ID Daten (Live-Test 20.11.2026), die Erkennung findet daher 1.
+   Bei `http://` ein Hinweis, dass das Passwort unverschlüsselt übertragen wird. Erst Haus und
+   Ausgänge lesen (ohne Zugangsdaten), dann die Zugangsdaten mit `verify_credentials()` prüfen
+   (fail closed, siehe 4b). Die getestete Anlage mit einem Haus lieferte für Haus-ID 99
+   dieselben Daten wie für 1 (Live-Test 20.11.2026); die Erkennung findet daher 1.
 2. **Räume:** Liste der erkannten Räume mit Häkchen (Räume ohne Regelung sind abgewählt).
 3. **System-Fühler:** Liste aller Fühler, die keinem Raum als Raum- oder Rücklauffühler dienen,
    mit Wert, Anbindung (siehe 8.) und Häkchen. Bei dir z. B.:
@@ -129,22 +130,37 @@ Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
   werden, Mini-Server antwortet unerwartet“). In keinem Fehlerfall wird etwas gespeichert. Live
   keine Wirkung beobachtet (Vorher-Nachher-Vergleich 20.11.2026), es bleibt aber ein
   Schreibaufruf: genau einmal pro abgeschicktem Formular, nie im Coordinator oder beim Abruf.
+  **Reihenfolge:** Das Passwort geht im Klartext per HTTP hinaus. Einrichtung und Reconfigure
+  senden es deshalb erst, nachdem `temps/` unter der Adresse die erwartete Anlage gezeigt hat
+  (Einrichtung: ein Haus mit Räumen; Reconfigure: siehe Plausibilität unten); passt `temps/`
+  nicht, wird `verify_credentials()` nicht aufgerufen. Reauth prüft gegen den gespeicherten Host.
+  **Bewusste Entscheidung: keine periodische Prüfung im Hintergrund.** Sie wäre ein ständiger
+  POST auf einen Schreib-Endpunkt.
+  **Offene Annahme (Mehrhaus-Anlagen):** Getestet ist nur eine Anlage mit einem Haus (Haus-ID 1,
+  Raum 99999). Ob Prüfanfrage, Haus-ID und Raum-IDs sich auf Anlagen mit mehreren Häusern
+  genauso verhalten, ist offen; im ungünstigsten Fall ergibt die Prüfung `cannot_verify`
+  (fail closed).
 - **Passwort:** wird in Reauth und Reconfigure immer neu eingegeben, nie vorbelegt und nach einem
   Formularfehler nie zurückgegeben (nur Host und Benutzer).
 - **Reauth** (startet automatisch bei 401/403): fragt Benutzer und Passwort, prüft gegen das Gerät
-  unter dem gespeicherten Host und der gespeicherten Haus-ID, speichert nur bei Erfolg.
+  unter dem gespeicherten Host und der gespeicherten Haus-ID, speichert nur bei Erfolg. Da kein
+  lesender Endpunkt die Zugangsdaten prüft, fällt ein geändertes Passwort erst bei einem
+  Schreibaufruf auf (403 → Reauth). Ohne Schreibfunktionen das Passwort über „Neu
+  konfigurieren“ ändern.
 - **Reconfigure** („Neu konfigurieren“, vor allem nach einem IP-Wechsel): fragt Host, Benutzer und
   Passwort. Ablauf:
   1. Gehört die neue Adresse schon zu einem **anderen** Eintrag (auch einem ignorierten) →
      Abbruch `already_configured`, ohne das Gerät anzusprechen.
-  2. Prüfung wie bei der Einrichtung (Verbindung, Zugangsdaten über `verify_credentials()`, API),
-     aber mit der gespeicherten Haus-ID statt automatischer Erkennung.
-  3. **Plausibilität statt Seriennummer** (die API liefert keine): Unter der neuen Adresse muss
-     mindestens einer der ausgewählten Räume existieren (ohne Auswahl: irgendein Raum). Die Haus-ID
-     taugt nicht als Merkmal: Eine Anlage mit einem Haus liefert für jede Haus-ID Daten (Live-Test
-     20.11.2026). Antwortet `temps/` mit 404 oder ohne Räume → Abbruch `wrong_device`, ebenso wenn
-     ein anderer Webserver die Prüfanfrage mit leerem 404 beantwortet und `temps/` mit 404. Andere
-     nicht auswertbare Antworten ergeben den Formularfehler „kein Haus gefunden“.
+  2. **Plausibilität statt Seriennummer** (die API liefert keine), ohne Zugangsdaten und mit der
+     gespeicherten Haus-ID: Unter der neuen Adresse muss mindestens einer der ausgewählten Räume
+     existieren (ohne Auswahl: irgendein Raum). Die Haus-ID taugt nicht als Merkmal: Die getestete
+     Anlage mit einem Haus lieferte für Haus-ID 99 dieselben Daten wie für 1 (Live-Test
+     20.11.2026). Antwortet `temps/` mit 404 oder ohne Räume → Abbruch `wrong_device`; die
+     Zugangsdaten gehen dann nicht an diese Adresse (z. B. ein anderer Webserver, der auch die
+     Prüfanfrage mit leerem 404 beantworten würde). Andere nicht auswertbare Antworten ergeben den
+     Formularfehler „kein Haus gefunden“.
+  3. Erst danach: Ausgänge lesen und Zugangsdaten über `verify_credentials()` prüfen (wie bei der
+     Einrichtung).
   4. Bei Erfolg: neue Verbindungsdaten, **Unique ID folgt der neuen Adresse** (`http://<host>`), ein
      automatisch erzeugter Titel `Controme (<host>)` folgt dem Host, ein umbenannter Titel bleibt.
      Optionen bleiben unverändert; die Integration lädt neu.

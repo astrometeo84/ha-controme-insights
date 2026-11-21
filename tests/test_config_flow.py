@@ -516,19 +516,21 @@ async def test_reconfigure_house_not_found_aborts(
     assert result["reason"] == "wrong_device"
     assert config_entry.data == ENTRY_DATA
     assert config_entry.unique_id == f"http://{HOST}"
+    mock_client.verify_credentials.assert_not_awaited()  # no credentials to a foreign address
 
 
 async def test_reconfigure_other_web_server_aborts(
     hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
 ) -> None:
-    # Another web server at the new address: an empty 404 to the probe looks like valid
-    # credentials to verify_credentials(), but temps/ answers 404 too → wrong_device.
+    # Another web server at the new address: an empty 404 to the probe would look like valid
+    # credentials to verify_credentials(), but temps/ answers 404 first → wrong_device, and
+    # the probe (with the plain-text password) is never sent there.
     mock_client.verify_credentials.return_value = None
     mock_client.get_house.side_effect = ContromeNotFoundError("HTTP 404", status=404)
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "wrong_device"
-    mock_client.verify_credentials.assert_awaited_once()
+    mock_client.verify_credentials.assert_not_awaited()
     assert config_entry.data == ENTRY_DATA  # nothing saved
     assert config_entry.unique_id == f"http://{HOST}"
     assert config_entry.title == f"Controme ({HOST})"
@@ -563,6 +565,7 @@ async def test_reconfigure_no_selected_room_found_aborts(
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "wrong_device"
     assert config_entry.data == ENTRY_DATA
+    mock_client.verify_credentials.assert_not_awaited()
 
 
 async def test_reconfigure_without_selected_rooms_needs_any_room(
@@ -719,3 +722,64 @@ async def test_full_setup_verifies_credentials_only_in_the_connection_step(
     result = await _to_gateways(hass)
     assert result["step_id"] == "gateway"
     mock_client.verify_credentials.assert_awaited_once()
+
+
+@pytest.mark.parametrize(
+    ("method", "error"),
+    [
+        # Another web server at the address: temps/ answers 404 for every house ID.
+        ("detect_house_id", ContromeError("No house with rooms found (tried IDs 1-10)")),
+        ("detect_house_id", ContromeNotFoundError("HTTP 404", status=404)),
+        ("get_house", ContromeNotFoundError("HTTP 404", status=404)),
+        ("get_house", ContromeResponseError("Invalid JSON from …", status=200)),
+        ("get_outputs", ContromeResponseError("Invalid JSON from …", status=200)),
+    ],
+)
+async def test_user_flow_sends_no_credentials_to_unmatched_address(
+    hass: HomeAssistant, mock_client: MagicMock, method: str, error: Exception
+) -> None:
+    # The password travels in plain text: verify_credentials() only after temps/ matched.
+    getattr(mock_client, method).side_effect = error
+    flow_id = await _start(hass)
+    result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
+    assert result["errors"] == {"base": "no_house"}  # not cannot_verify
+    mock_client.verify_credentials.assert_not_awaited()
+
+
+@pytest.mark.parametrize("flow", ["user", "reconfigure"])
+async def test_flows_check_the_address_before_sending_credentials(
+    hass: HomeAssistant, mock_client: MagicMock, flow: str
+) -> None:
+    calls: list[str] = []
+    mock_client.get_house.side_effect = lambda: (
+        calls.append("temps") or (mock_client.get_house.return_value)
+    )
+    mock_client.verify_credentials.side_effect = lambda: calls.append("verify")
+    await _submit_flow(hass, flow, mock_client, _entry())
+    assert calls == ["temps", "verify"]
+
+
+async def test_reconfigure_wrong_credentials_at_the_right_address(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
+) -> None:
+    # The house matches, the credentials are rejected: a form error, no abort.
+    mock_client.verify_credentials.side_effect = ContromeAuthError("HTTP 403", status=403)
+    result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "invalid_auth"}
+    mock_client.get_house.assert_awaited_once()
+    assert config_entry.data == ENTRY_DATA
+
+
+async def test_cannot_verify_logs_only_the_status(
+    hass: HomeAssistant, mock_client: MagicMock, caplog: pytest.LogCaptureFixture
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    mock_client.verify_credentials.side_effect = ContromeResponseError(
+        f"echo {TEST_PASSWORD}", status=418
+    )
+    flow_id = await _start(hass)
+    result = await hass.config_entries.flow.async_configure(flow_id, USER_INPUT)
+    assert result["errors"] == {"base": "cannot_verify"}
+    assert "Credentials could not be verified (HTTP 418)" in caplog.text
+    assert_no_credentials(caplog.text)

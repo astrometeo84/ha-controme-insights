@@ -12,9 +12,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Reconfigure flow: change the address (e.g. after an IP address change) and credentials of an
   entry. The password is always entered again and checked against the device. As the API
   reports no serial number, at least one of the selected rooms must exist at the new address
-  (without a selection: any room; otherwise `wrong_device`). The house ID is no evidence: a
-  one-house system returns its data for every house ID (live test 2026-11-20). An address of
-  another entry aborts with `already_configured`. The unique ID and the generated title follow the new address.
+  (without a selection: any room; otherwise `wrong_device`), checked before the credentials
+  are sent. The house ID is no evidence: the tested one-house system returned house 1's data
+  for house ID 99 (live test 2026-11-20). An address of another entry aborts with
+  `already_configured`. The unique ID and the generated title follow the new address.
 - Diagnostics download: entry (host, username, password and title redacted), options, system
   info, status per coordinator (last success, last error without host or credentials) and the
   data of all coordinators. Sensor IDs, MACs and IP addresses are replaced by
@@ -30,8 +31,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   included, do not check credentials (live test 2026-11-20), so previously wrong credentials
   could be stored. The check is a POST to `roomoffset/99999/` (a room that does not exist) with
   offset 0; it showed no effect live, but it is a write call and runs only in these flows,
-  never while polling. Firmware without `room_details/` can be set up again; only the room
-  details entities are unavailable then.
+  never while polling. Setup and reconfigure send it only after `temps/` matched, so the
+  plain-text password never goes to an address without the expected system. Firmware without
+  `room_details/` can be set up; only the room details entities are unavailable then.
 
 ### Security
 

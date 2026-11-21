@@ -101,55 +101,60 @@ class _CannotVerify(Exception):
     """``verify_credentials()`` got an unexpected answer, so the credentials are unverified."""
 
 
-async def _validate(client: ContromeClient, house_id: int | None = None) -> int:
-    """Check the credentials and return the house ID (detected unless ``house_id`` is given).
+async def _verify(client: ContromeClient) -> None:
+    """Verify the credentials; call only after the address proved to be the right system.
 
     Read endpoints do not check credentials (live test 2026-11-20), so they are verified with
     ``client.verify_credentials()``: a POST to ``roomoffset/99999/`` (a room that does not
-    exist) with offset 0, which showed no effect live but is still a write call. Call it only
-    here, once per submitted form; never in the coordinators. Fail closed: rejected
-    credentials raise ``ContromeAuthError``, any unexpected answer ``_CannotVerify``; in both
-    cases nothing is saved.
+    exist) with offset 0, which showed no effect live but is still a write call. The password
+    travels in plain text over HTTP, so it is sent only once the address answered ``temps/``
+    like the expected Controme system (reads send no credentials). Call it only from the
+    flows, once per submitted form; never in the coordinators and never periodically. Fail
+    closed: rejected credentials raise ``ContromeAuthError``, any unexpected answer
+    ``_CannotVerify``; in both cases nothing is saved.
     """
-    if house_id is None:
-        house_id = await client.detect_house_id()
     try:
         await client.verify_credentials()
     except ContromeAuthError:
         raise
     except ContromeResponseError as err:
+        # Status only: the text could echo the response and the status helps with support.
+        _LOGGER.debug("Credentials could not be verified (HTTP %s)", err.status)
         raise _CannotVerify from err
-    return house_id
 
 
 async def _connect(client: ContromeClient) -> tuple[int, House, tuple[Output, ...]]:
-    """Validate a new connection: house ID, credentials, house and outputs."""
-    house_id = await _validate(client)
-    return house_id, await client.get_house(), await client.get_outputs()
+    """Validate a new connection: house ID, house and outputs first, then the credentials."""
+    house_id = await client.detect_house_id()  # only a house with rooms passes
+    house = await client.get_house()
+    outputs = await client.get_outputs()
+    await _verify(client)
+    return house_id, house, outputs
 
 
 class _WrongDevice(Exception):
     """The address answers, but not with the Controme system of the entry."""
 
 
-async def _check_same_system(client: ContromeClient, house_id: int, rooms: Iterable[int]) -> None:
-    """Plausibility check instead of a serial number (the API reports none).
+async def _check_same_system(client: ContromeClient, rooms: Iterable[int]) -> None:
+    """Plausibility check instead of a serial number (the API reports none), then credentials.
 
     The house at the address must contain at least one of the selected rooms (any room if none
-    is selected); 404 from ``temps/`` counts as "not found". The house ID is no evidence: a
-    one-house system returns its data for every house ID (live test 2026-11-20). Credentials
-    are verified first, as in the setup (fail closed).
+    is selected); 404 from ``temps/`` counts as "not found". The house ID is no evidence: the
+    tested one-house system returned house 1's data for house ID 99 (live test 2026-11-20).
+    Only after this check are the credentials sent (``_verify``), so they never go to an
+    address that does not hold the expected system.
     """
-    await _validate(client, house_id)
     try:
         house = await client.get_house()
     except ContromeNotFoundError as err:
         raise _WrongDevice from err
-    await client.get_outputs()
     found = {room.id for room in house.rooms}
     selected = set(rooms)
     if not found or (selected and not found & selected):
         raise _WrongDevice
+    await client.get_outputs()
+    await _verify(client)
 
 
 def _title(host: str) -> str:
@@ -487,7 +492,7 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
                 entry.data[CONF_HOUSE_ID],
             )
             try:
-                await _validate(client, entry.data[CONF_HOUSE_ID])
+                await _verify(client)  # stored host and house ID
             except Exception as err:  # mapped to a form error
                 errors["base"] = _error_key(err)
             else:
@@ -530,7 +535,7 @@ class ContromeInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
             ):
                 return self.async_abort(reason="already_configured")
             try:
-                await _check_same_system(client, house_id, entry.options.get(CONF_ROOMS, []))
+                await _check_same_system(client, entry.options.get(CONF_ROOMS, []))
             except _WrongDevice:
                 return self.async_abort(reason="wrong_device")
             except Exception as err:  # mapped to a form error
