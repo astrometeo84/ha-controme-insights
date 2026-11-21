@@ -66,9 +66,10 @@ live test 2026-11-20, see "Basics").
 - right credentials → **404 with an empty `text/html` body** (no Django debug page),
 - wrong credentials → **403 with an empty body**.
 
-The server checks the credentials **before** the room, so such a call verifies the credentials,
-presumably without effect (no before/after comparison). It is still a POST to a write endpoint.
-Only tested with room `99999`.
+The server checks the credentials **before** the room, so such a call verifies the credentials.
+No effect observed: before/after comparison of `room_details/` around the live suite run on
+2026-11-20 showed only measurement changes, no change under offsets. It is still a POST to a
+write endpoint. Only tested with room `99999`.
 
 Success (live test 2026-11-15, fixtures `write/*.txt`): **HTTP 200 with an empty `text/html` body**
 for `soll`, `roomoffset`, `houseoffset`; `ziel` answers with JSON
