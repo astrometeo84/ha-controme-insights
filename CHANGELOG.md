@@ -31,8 +31,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   included, do not check credentials (live test 2026-11-20), so previously wrong credentials
   could be stored. The check is a POST to `roomoffset/99999/` (a room that does not exist) with
   offset 0; it showed no effect live, but it is a write call and runs only in these flows,
-  never while polling. Setup and reconfigure send it only after `temps/` matched, so the
-  plain-text password never goes to an address without the expected system. Firmware without
+  never while polling. Setup and reconfigure send it only after `temps/` at the address returned
+  a Controme house with rooms (reconfigure: one of the selected rooms). Firmware without
   `room_details/` can be set up; only the room details entities are unavailable then.
 
 ### Security

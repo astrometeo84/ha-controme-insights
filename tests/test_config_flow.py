@@ -539,8 +539,8 @@ async def test_reconfigure_other_web_server_aborts(
 async def test_reconfigure_ignores_house_id_of_the_answer(
     hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
 ) -> None:
-    # A one-house system returns its data for every house ID (live test 2026-11-20): only
-    # the rooms count, not the house ID.
+    # The tested one-house system returned house 1's data for house ID 99 (live test
+    # 2026-11-20): only the rooms count, not the house ID.
     mock_client.get_house.return_value = parse_temps(load_fixture("temps.json"), house_id=7, tz=TZ)
     result = await _reconfigure(hass, config_entry, mock_client, NEW_HOST)
     assert result["reason"] == "reconfigure_successful"

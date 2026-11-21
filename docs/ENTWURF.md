@@ -138,8 +138,9 @@ Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
   POST auf einen Schreib-Endpunkt.
   **Offene Annahme (Mehrhaus-Anlagen):** Getestet ist nur eine Anlage mit einem Haus (Haus-ID 1,
   Raum 99999). Ob Prüfanfrage, Haus-ID und Raum-IDs sich auf Anlagen mit mehreren Häusern
-  genauso verhalten, ist offen; im ungünstigsten Fall ergibt die Prüfung `cannot_verify`
-  (fail closed).
+  genauso verhalten, ist offen. Im ungünstigsten Fall ergibt die Prüfung `cannot_verify`, oder
+  eine Anlage antwortet bei fremder Haus- oder Raum-ID mit leerem 404, bevor sie die
+  Zugangsdaten prüft; dann würden falsche Zugangsdaten als gültig gespeichert.
 - **Passwort:** wird in Reauth und Reconfigure immer neu eingegeben, nie vorbelegt und nach einem
   Formularfehler nie zurückgegeben (nur Host und Benutzer).
 - **Reauth** (startet automatisch bei 401/403): fragt Benutzer und Passwort, prüft gegen das Gerät

@@ -142,8 +142,8 @@ async def _check_same_system(client: ContromeClient, rooms: Iterable[int]) -> No
     The house at the address must contain at least one of the selected rooms (any room if none
     is selected); 404 from ``temps/`` counts as "not found". The house ID is no evidence: the
     tested one-house system returned house 1's data for house ID 99 (live test 2026-11-20).
-    Only after this check are the credentials sent (``_verify``), so they never go to an
-    address that does not hold the expected system.
+    Only after this check are the credentials sent (``_verify``), so they do not go to an
+    address whose ``temps/`` lacks the selected rooms.
     """
     try:
         house = await client.get_house()

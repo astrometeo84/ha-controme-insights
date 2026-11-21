@@ -17,8 +17,8 @@ Not affiliated with Controme GmbH. License: GPL-3.0.
   Mini-Server checks the credentials before the room and answers 404 (valid) or 403 (wrong)
   (live test 2026-11-20 on a NOVA 27, room 99999, house 1). No effect was observed, but it is
   still a write call; it runs only in these flows, never while polling and never in the
-  background. Setup and reconfiguration send it only after the address answered with the
-  expected Controme house. Any other answer stops with the error `cannot_verify` and nothing
+  background. Setup and reconfiguration send it only after the address answered `temps/` with
+  a Controme house with rooms (reconfiguration: one of the selected rooms). Any other answer stops with the error `cannot_verify` and nothing
   is saved.
 - `room_details/` (undocumented) is optional: without it only the room details entities are
   unavailable.
@@ -29,8 +29,9 @@ Not affiliated with Controme GmbH. License: GPL-3.0.
   unencrypted in your local network as form fields of every write call and of the credential
   check. Read calls send no credentials (HTTP Basic Auth only as a fallback if `room_details/`
   answers 401/403). Use the integration only in a trusted local network.
-- A changed Controme password is noticed only by a write call (HTTP 403 starts
-  reauthentication); reads do not check it. Without write functions, enter the new password
+- Reads do not check the credentials, so a changed Controme password is not noticed while
+  polling. Planned: a write call answered with HTTP 403 starts reauthentication (this version
+  has no write functions yet). Until then, and without write functions, enter the new password
   via **Reconfigure**.
 - Home Assistant stores the credentials in `.storage/core.config_entries`, like those of every
   other integration. The integration keeps them out of logs, error messages and the diagnostics
