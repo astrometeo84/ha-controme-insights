@@ -63,7 +63,7 @@
       },
       "reconfigure": {
         "title": "Verbindung ändern",
-        "description": "Neue Adresse des Mini-Servers eingeben, z. B. nach einem IP-Wechsel, oder neue Zugangsdaten. Das Passwort bitte neu eingeben. Die Adresse wird übernommen, wenn dort Haus {house_id} mit mindestens einem der ausgewählten Räume existiert.",
+        "description": "Neue Adresse des Mini-Servers eingeben, z. B. nach einem IP-Wechsel, oder neue Zugangsdaten. Das Passwort bitte neu eingeben. Die Adresse wird übernommen, wenn dort mindestens einer der ausgewählten Räume existiert.",
         "data": {
           "host": "Host",
           "username": "Benutzer",
@@ -79,7 +79,7 @@
     "error": {
       "cannot_connect": "Der Mini-Server ist nicht erreichbar. Adresse prüfen und ob er im selben Netz ist.",
       "invalid_auth": "Benutzer oder Passwort ist falsch.",
-      "room_details_invalid": "Der Mini-Server hat für die Raumdetails keine auswertbare Antwort geliefert, die Zugangsdaten konnten nicht geprüft werden. Benutzer, Passwort und Adresse prüfen.",
+      "cannot_verify": "Die Zugangsdaten konnten nicht geprüft werden: Der Mini-Server antwortet unerwartet (Firmware?). Adresse prüfen und erneut versuchen.",
       "api_disabled": "Die API ist auf dieser Controme-Anlage ausgeschaltet. In Controme freischalten und erneut versuchen.",
       "no_house": "Auf dieser Controme-Anlage wurde kein Haus mit Räumen gefunden.",
       "unknown": "Unerwarteter Fehler. Details stehen im Log.",
@@ -90,7 +90,7 @@
       "already_configured": "Diese Controme-Anlage ist bereits eingerichtet.",
       "reauth_successful": "Die Zugangsdaten wurden aktualisiert.",
       "reconfigure_successful": "Die Verbindung wurde aktualisiert.",
-      "wrong_device": "Unter dieser Adresse gibt es keine passende Controme-Anlage: Haus oder ausgewählte Räume nicht gefunden. Für eine andere Anlage einen neuen Eintrag anlegen."
+      "wrong_device": "Unter dieser Adresse gibt es keine passende Controme-Anlage: ausgewählte Räume nicht gefunden. Für eine andere Anlage einen neuen Eintrag anlegen."
     }
   },
   "options": {

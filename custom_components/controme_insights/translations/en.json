@@ -63,7 +63,7 @@
       },
       "reconfigure": {
         "title": "Change connection",
-        "description": "Enter the new address of the Mini-Server, e.g. after an IP address change, or new credentials. Enter the password again. The address is accepted if it holds house {house_id} with at least one of the selected rooms.",
+        "description": "Enter the new address of the Mini-Server, e.g. after an IP address change, or new credentials. Enter the password again. The address is accepted if at least one of the selected rooms exists there.",
         "data": {
           "host": "Host",
           "username": "Username",
@@ -79,7 +79,7 @@
     "error": {
       "cannot_connect": "Cannot reach the Mini-Server. Check the address and that it is in the same network.",
       "invalid_auth": "Username or password is wrong.",
-      "room_details_invalid": "The Mini-Server gave no usable answer for the room details, so the credentials could not be verified. Check username, password and address.",
+      "cannot_verify": "The credentials could not be verified: the Mini-Server answered unexpectedly (firmware?). Check the address and try again.",
       "api_disabled": "The API is disabled on this Controme system. Enable it in Controme and try again.",
       "no_house": "No house with rooms was found on this Controme system.",
       "unknown": "Unexpected error. See the log for details.",
@@ -90,7 +90,7 @@
       "already_configured": "This Controme system is already configured.",
       "reauth_successful": "The credentials were updated.",
       "reconfigure_successful": "The connection was updated.",
-      "wrong_device": "No matching Controme system at this address: house or selected rooms not found. To add another Controme system, set up a new entry."
+      "wrong_device": "No matching Controme system at this address: selected rooms not found. To add another Controme system, set up a new entry."
     }
   },
   "options": {

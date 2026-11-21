@@ -90,6 +90,7 @@ def mock_client() -> Generator[MagicMock]:
     client = MagicMock()
     client.base_url = BASE_URL
     client.detect_house_id = AsyncMock(return_value=1)
+    client.verify_credentials = AsyncMock(return_value=None)
     client.get_info = AsyncMock(return_value=parse_info(load_fixture("info.json"), TZ))
     client.get_house = AsyncMock(
         return_value=parse_temps(load_fixture("temps.json"), house_id=1, tz=TZ)

@@ -43,17 +43,18 @@ Integration. Controme Insights baut das nicht nach.
 |---|---|---|---|---|
 | `get/json/v1/{h}/outs/` | dokumentiert | nein | 60 s | Ventilstellung % je Ausgang |
 | `get/json/v1/{h}/temps/` | dokumentiert | nein | 60 s | alle Fühler je Raum inkl. letzter Übertragung |
-| `get/json/v1/{h}/room_details/` | **undokumentiert** (nutzt die offizielle Integration) | ja (Basic Auth) | 60 s | Offsets je Quelle, nächster Wechsel, Smart Timing, Timer, Gateway offline |
+| `get/json/v1/{h}/room_details/` | **undokumentiert** (nutzt die offizielle Integration) | nein (Live-Test 20.11.2026; Rückfall Basic Auth bei 401/403) | 60 s | Offsets je Quelle, nächster Wechsel, Smart Timing, Timer, Gateway offline |
 | `get/json/v1/{h}/upcomingoffsets/` | dokumentiert | nein | 5 min | nächster Heizprogramm-Wechsel (Haus) |
 | `get/json/v1/{h}/info/` | dokumentiert | nein | beim Start | Software, Branch, Hardware → Geräteinfo |
 | `get/json/v1/{h}/vtr/`, `fps/`, `wetter_pro/` | dokumentiert | nein | 5 min | nur wenn die Anlage Daten liefert (bei dir: leer) |
 | `set/json/v1/{h}/roomoffset/…` | dokumentiert | ja | bei Bedarf, Erneuerung alle 5 min | API-Offset, Boost |
 | `set/json/v1/{h}/quickui/` | dokumentiert | ja | bei Bedarf | Standarddauer Schnellbedienung |
+| `set/json/v1/{h}/roomoffset/99999/` | Endpunkt dokumentiert; Verhalten bei unbekanntem Raum nur live beobachtet (20.11.2026, nicht als Fixture) | ja | nur in Einrichtung, Reauth, Reconfigure | Prüfung der Zugangsdaten (`verify_credentials()`, siehe 4b) |
 
 **Rückfall:** Liefert `room_details` im laufenden Betrieb einen Fehler, laufen alle Entitäten aus
-`outs`/`temps` weiter. Nur die `room_details`-Entitäten werden „nicht verfügbar“. Bei Einrichtung,
-Reauth und Reconfigure muss `room_details` dagegen auswertbar antworten (fail closed, siehe 4b);
-eine Firmware ohne diesen Endpunkt lässt sich daher nicht einrichten.
+`outs`/`temps` weiter. Nur die `room_details`-Entitäten werden „nicht verfügbar“. Das gilt auch
+für eine Firmware ohne diesen Endpunkt: Sie lässt sich einrichten, die Zugangsdaten prüft
+`verify_credentials()` (siehe 4b).
 
 **Hinweis:** `rltemps` wird nicht gebraucht – `temps` enthält dieselben Rücklauffühler plus alle anderen.
 
@@ -62,7 +63,10 @@ eine Firmware ohne diesen Endpunkt lässt sich daher nicht einrichten.
 ## 4. Einrichtung (Config Flow)
 
 1. **Verbindung:** Host, Haus-ID (Standard 1, automatisch erkannt), Benutzer, Passwort.
-   Bei `http://` ein Hinweis, dass das Passwort unverschlüsselt übertragen wird.
+   Bei `http://` ein Hinweis, dass das Passwort unverschlüsselt übertragen wird. Erst Haus und
+   Ausgänge lesen (ohne Zugangsdaten), dann die Zugangsdaten mit `verify_credentials()` prüfen
+   (fail closed, siehe 4b). Die getestete Anlage mit einem Haus lieferte für Haus-ID 99
+   dieselben Daten wie für 1 (Live-Test 20.11.2026); die Erkennung findet daher 1.
 2. **Räume:** Liste der erkannten Räume mit Häkchen (Räume ohne Regelung sind abgewählt).
 3. **System-Fühler:** Liste aller Fühler, die keinem Raum als Raum- oder Rücklauffühler dienen,
    mit Wert, Anbindung (siehe 8.) und Häkchen. Bei dir z. B.:
@@ -117,35 +121,51 @@ Alle Punkte aus 2.–5. lassen sich später unter „Konfigurieren“ ändern.
 
 ### 4b. Zugangsdaten erneuern und Verbindung ändern
 
-- **Prüfung der Zugangsdaten (alle Flows, fail closed):** `room_details/` ist der einzige lesende
-  Endpunkt mit Authentifizierung. 401/403 → Fehler „Benutzer oder Passwort falsch“. Jede andere nicht
-  auswertbare Antwort (404, andere HTTP-Fehler, ungültiges JSON oder HTML mit 200, unerwartete
-  Struktur) → Fehler `room_details_invalid` („Antwort nicht auswertbar, Zugangsdaten und Adresse
-  prüfen“); es wird **nichts gespeichert**. Live noch nicht belegt: wie `room_details/` auf falsche
-  Zugangsdaten antwortet (angenommen 401/403; aufgezeichnet ist nur 403 mit leerem Body bei Schreibaufrufen).
-  **Offene Annahme:** Eine leere Liste `[]` von `room_details/` gilt als bestanden (der Parser
-  liefert dann keine Räume, aber keinen Fehler); `{}` und `null` ergeben `room_details_invalid`.
-  Ob `[]` auch bei falschen oder fehlenden Zugangsdaten vorkommen kann, klärt der Live-Test
-  (`room_details/` mit falschem und ohne Passwort); danach ggf. als nicht auswertbar behandeln.
+- **Prüfung der Zugangsdaten (alle Flows, fail closed):** Kein lesender Endpunkt prüft die
+  Zugangsdaten, auch `room_details/` nicht (Live-Test 20.11.2026). Geprüft wird deshalb mit
+  `aiocontrome` `verify_credentials()`: POST auf `roomoffset/99999/` (Raum existiert nicht) mit
+  Offset 0. Ergebnis → Formular: gültig (404 mit leerem Body) → weiter; abgelehnt (403) →
+  `invalid_auth`; nicht erreichbar → `cannot_connect`; jede andere Antwort (z. B. 404 mit
+  Django-Debug-Seite, 200, 401, 500) → `cannot_verify` („Zugangsdaten konnten nicht geprüft
+  werden, Mini-Server antwortet unerwartet“). In keinem Fehlerfall wird etwas gespeichert. Live
+  keine Wirkung beobachtet (Vorher-Nachher-Vergleich 20.11.2026), es bleibt aber ein
+  Schreibaufruf: genau einmal pro abgeschicktem Formular, nie im Coordinator oder beim Abruf.
+  **Reihenfolge:** Das Passwort geht im Klartext per HTTP hinaus. Einrichtung und Reconfigure
+  senden es deshalb erst, nachdem `temps/` unter der Adresse die erwartete Anlage gezeigt hat
+  (Einrichtung: ein Haus mit Räumen; Reconfigure: siehe Plausibilität unten); passt `temps/`
+  nicht, wird `verify_credentials()` nicht aufgerufen. Reauth prüft gegen den gespeicherten Host.
+  **Bewusste Entscheidung: keine periodische Prüfung im Hintergrund.** Sie wäre ein ständiger
+  POST auf einen Schreib-Endpunkt.
+  **Offene Annahme (Mehrhaus-Anlagen):** Getestet ist nur eine Anlage mit einem Haus (Haus-ID 1,
+  Raum 99999). Ob Prüfanfrage, Haus-ID und Raum-IDs sich auf Anlagen mit mehreren Häusern
+  genauso verhalten, ist offen. Im ungünstigsten Fall ergibt die Prüfung `cannot_verify`, oder
+  eine Anlage antwortet bei fremder Haus- oder Raum-ID mit leerem 404, bevor sie die
+  Zugangsdaten prüft; dann würden falsche Zugangsdaten als gültig gespeichert.
 - **Passwort:** wird in Reauth und Reconfigure immer neu eingegeben, nie vorbelegt und nach einem
   Formularfehler nie zurückgegeben (nur Host und Benutzer).
 - **Reauth** (startet automatisch bei 401/403): fragt Benutzer und Passwort, prüft gegen das Gerät
-  unter dem gespeicherten Host und der gespeicherten Haus-ID, speichert nur bei Erfolg.
+  unter dem gespeicherten Host und der gespeicherten Haus-ID, speichert nur bei Erfolg. Da kein
+  lesender Endpunkt die Zugangsdaten prüft, fällt ein geändertes Passwort erst bei einem
+  Schreibaufruf auf (403 → Reauth). Ohne Schreibfunktionen das Passwort über „Neu
+  konfigurieren“ ändern.
 - **Reconfigure** („Neu konfigurieren“, vor allem nach einem IP-Wechsel): fragt Host, Benutzer und
   Passwort. Ablauf:
   1. Gehört die neue Adresse schon zu einem **anderen** Eintrag (auch einem ignorierten) →
      Abbruch `already_configured`, ohne das Gerät anzusprechen.
-  2. Prüfung wie bei der Einrichtung (Verbindung, Zugangsdaten über `room_details/`, API), aber mit
-     der gespeicherten Haus-ID statt automatischer Erkennung.
-  3. **Plausibilität statt Seriennummer** (die API liefert keine): Unter der neuen Adresse muss die
-     gespeicherte Haus-ID existieren und mindestens einer der ausgewählten Räume (ohne Auswahl:
-     irgendein Raum). Sonst Abbruch `wrong_device`. Live noch nicht belegt: die Antwort von `temps/`
-     auf eine unbekannte Haus-ID (404 und `[]` werden beide als „fehlt“ behandelt; andere Antworten
-     ergeben den Formularfehler „kein Haus gefunden“).
+  2. **Plausibilität statt Seriennummer** (die API liefert keine), ohne Zugangsdaten und mit der
+     gespeicherten Haus-ID: Unter der neuen Adresse muss mindestens einer der ausgewählten Räume
+     existieren (ohne Auswahl: irgendein Raum). Die Haus-ID taugt nicht als Merkmal: Die getestete
+     Anlage mit einem Haus lieferte für Haus-ID 99 dieselben Daten wie für 1 (Live-Test
+     20.11.2026). Antwortet `temps/` mit 404 oder ohne Räume → Abbruch `wrong_device`; die
+     Zugangsdaten gehen dann nicht an diese Adresse (z. B. ein anderer Webserver, der auch die
+     Prüfanfrage mit leerem 404 beantworten würde). Andere nicht auswertbare Antworten ergeben den
+     Formularfehler „kein Haus gefunden“.
+  3. Erst danach: Ausgänge lesen und Zugangsdaten über `verify_credentials()` prüfen (wie bei der
+     Einrichtung).
   4. Bei Erfolg: neue Verbindungsdaten, **Unique ID folgt der neuen Adresse** (`http://<host>`), ein
      automatisch erzeugter Titel `Controme (<host>)` folgt dem Host, ein umbenannter Titel bleibt.
      Optionen bleiben unverändert; die Integration lädt neu.
-- **Formularfehler:** `cannot_connect`, `invalid_auth`, `room_details_invalid`, `api_disabled`,
+- **Formularfehler:** `cannot_connect`, `invalid_auth`, `cannot_verify`, `api_disabled`,
   `no_house`, `unknown`. **Abbrüche:** `reauth_successful`, `reconfigure_successful`,
   `already_configured`, `wrong_device`.
 

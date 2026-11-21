@@ -48,6 +48,18 @@ async def test_setup_and_unload(
     assert config_entry.state is ConfigEntryState.NOT_LOADED
 
 
+async def test_setup_and_polling_never_verify_credentials(
+    hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
+) -> None:
+    # verify_credentials() is a POST to a write endpoint: only the flows may call it.
+    await _setup(hass, config_entry)
+    data = config_entry.runtime_data
+    for coordinator in (data.house, data.outputs, data.room_details, data.upcoming, data.fps):
+        await coordinator.async_refresh()
+    assert mock_client.get_house.await_count >= 2  # polled again
+    mock_client.verify_credentials.assert_not_awaited()
+
+
 @pytest.mark.parametrize("method", ["get_info", "get_house", "get_outputs"])
 async def test_required_source_failure_retries_setup(
     hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry, method: str
@@ -86,7 +98,8 @@ async def test_auth_error_on_info_starts_reauth(
 async def test_auth_error_on_room_details_starts_reauth(
     hass: HomeAssistant, mock_client: MagicMock, config_entry: MockConfigEntry
 ) -> None:
-    # room_details is the only authenticated read endpoint: a password change shows up here.
+    # The tested firmware does not check credentials on reads (live test 2026-11-20); firmware
+    # that does answers 401/403 even after aiocontrome's Basic Auth retry → reauth.
     mock_client.get_room_details.side_effect = ContromeAuthError("HTTP 403", status=403)
     await _setup(hass, config_entry)
     assert config_entry.state is ConfigEntryState.LOADED
