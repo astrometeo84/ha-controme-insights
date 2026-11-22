@@ -1,0 +1,15 @@
+# Files that must be byte-identical in aiocontrome and ha-controme-insights.
+# One glob per line, relative to the repo root; '#' starts a comment.
+# The list of the repository you run scripts/shared_sync.py from is authoritative.
+# Not shared: CLAUDE.md, ha-* skills, .claude/upstream/
+.claude/shared-files.txt
+.claude/agents/api-expert.md
+.claude/agents/test-manager.md
+.claude/settings.json
+.claude/skills/controme-api/**
+.claude/skills/release/**
+.claude/skills/security-secrets/**
+.claude/skills/shared-sync/**
+scripts/shared_sync.py
+tests/test_shared_sync.py
+tests/fixtures/**
