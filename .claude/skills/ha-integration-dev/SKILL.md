@@ -70,3 +70,19 @@ hacs.json
 ## HACS
 `hacs.json`: `{"name": "Controme Insights", "render_readme": true, "homeassistant": "<min version>"}`.
 Releases are made by the user (see skill `release`).
+
+## Upstream HA skills
+`ha-integration-knowledge`, `ha-quality-scale-verify` and `ha-review` come unchanged from Home
+Assistant Core (see `.claude/upstream/README.md`). Use them as the primary reference for HA patterns.
+They are written for the core repository; for this custom integration:
+- Paths: `homeassistant/components/<domain>/` → `custom_components/controme_insights/`;
+  `tests/components/<domain>/` → `tests/`.
+- Tooling: there is no `script/setup`, `prek` or `script.hassfest` here. Use the commands from
+  `CLAUDE.md` (`uv run pytest`, `ruff`, `mypy custom_components`). hassfest and the HACS validation
+  run in CI (`.github/workflows/ci.yml`, approved by the maintainer).
+- Review base is `origin/main`, not `dev`. The PR-template rules of core do not apply.
+- Quality scale: a custom integration has no official tier; use `ha-quality-scale-verify` as a
+  checklist (aim: Silver, Gold where it fits) and report rules as "unverified" when the core-only
+  validators are needed.
+- Where an upstream skill and this skill disagree, the upstream skill wins unless this skill names
+  a deliberate exception (e.g. `probatio` imports, `CLAUDE.md` rules on credentials and entity IDs).
